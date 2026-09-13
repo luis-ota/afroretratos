@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo_Black, Bodoni_Moda, Ubuntu } from "next/font/google";
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
 import "./globals.css";
 
 const ubuntu = Ubuntu({
@@ -77,9 +75,7 @@ export default function RootLayout({
         >
           Pular para o conteúdo
         </a>
-        <Header />
-        <main id="conteudo">{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

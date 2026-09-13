@@ -1,7 +1,12 @@
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
 import { ActionLink } from "@/components/ui/Action";
 
 export default function NotFound() {
   return (
+    <>
+      <Header />
+      <main id="conteudo">
     <section className="bg-beige text-brown-deep">
       <div className="mx-auto max-w-[96rem] px-5 py-24 sm:px-8 sm:py-32">
         <p className="font-display text-[clamp(4rem,16vw,10rem)] leading-[0.85] tracking-[-0.02em] text-wine">
@@ -24,5 +29,8 @@ export default function NotFound() {
         </div>
       </div>
     </section>
+      </main>
+      <Footer />
+    </>
   );
 }
