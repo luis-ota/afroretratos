@@ -122,7 +122,9 @@ o caminho natural é limpar `ip_encrypted`/`user_agent` por idade e manter o
 HMAC (8 horas), `noindex`, verificação no proxy (`proxy.ts`) e em cada server
 action. Funcionalidades: listar/filtrar posts, ocultar, reativar, remover,
 ver todos os posts da mesma origem, remover em lote, bloquear/desbloquear
-origem com motivo e duração, e ler denúncias. Trocar o `ADMIN_SECRET`
+origem com motivo e duração, ler denúncias e o **CRUD completo de eventos**
+(criar, editar, excluir, com slug único, datas e horários opcionais e
+revalidação das páginas públicas). Trocar o `ADMIN_SECRET`
 invalida todas as sessões.
 
 Para produção, o próximo passo é substituir o gate por um provedor real
