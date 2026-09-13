@@ -50,7 +50,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="underline decoration-beige/40 hover:decoration-beige"
               >
-                Wired Co.
+                Wired Layer Co.
               </a>
             </p>
           </div>
