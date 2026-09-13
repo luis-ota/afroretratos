@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: afroretratos-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: afro
+      POSTGRES_PASSWORD: afro
+      POSTGRES_DB: afroretratos
+    ports:
+      - "5437:5432"
+    volumes:
+      - afroretratos-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U afro -d afroretratos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: afroretratos-redis
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    ports:
+      - "6377:6379"
+    volumes:
+      - afroretratos-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  afroretratos-db:
+  afroretratos-redis:

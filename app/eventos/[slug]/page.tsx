@@ -1,0 +1,165 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { EventCover } from "@/components/events/EventCover";
+import { EventStatusTag } from "@/components/events/EventStatusTag";
+import { PostEntry } from "@/components/feed/PostEntry";
+import { ActionLink } from "@/components/ui/Action";
+import { Arrow } from "@/components/ui/Arrow";
+import { formatDateTimeRange } from "@/lib/format";
+import { getEventBySlug } from "@/services/events";
+import { listPublicPostsByEvent } from "@/services/posts";
+
+export const dynamic = "force-dynamic";
+
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const event = await getEventBySlug(slug);
+  if (!event) {
+    return { title: "Evento não encontrado" };
+  }
+  return {
+    title: event.title,
+    description:
+      event.description.slice(0, 180) ||
+      `Evento do AfroRetratos em ${formatDateTimeRange(event.startsAt, event.endsAt)}.`,
+    alternates: { canonical: `/eventos/${event.slug}` },
+    openGraph: {
+      type: "article",
+      title: `${event.title} · AfroRetratos`,
+      description: event.description.slice(0, 180),
+      images: [
+        {
+          url: "/brand/og-default.png",
+          width: 1200,
+          height: 630,
+          alt: `AfroRetratos: ${event.title}`,
+        },
+      ],
+    },
+  };
+}
+
+export default async function EventoPage({ params }: Props) {
+  const { slug } = await params;
+  const event = await getEventBySlug(slug);
+  if (!event) notFound();
+
+  const relatedPosts = await listPublicPostsByEvent(event.id, 6);
+
+  return (
+    <article>
+      <header className="bg-brown text-beige">
+        <div className="mx-auto max-w-[96rem] px-5 pt-10 sm:px-8 sm:pt-12">
+          <Link
+            href="/eventos"
+            className="group inline-flex min-h-11 items-center gap-3 text-xs font-medium tracking-[0.16em] uppercase text-beige/80 hover:text-beige"
+          >
+            <Arrow
+              direction="left"
+              className="h-3 w-6 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1.5"
+            />
+            Todos os eventos
+          </Link>
+        </div>
+        <div className="mx-auto grid max-w-[96rem] gap-8 px-5 pt-10 pb-12 sm:px-8 sm:pt-12 sm:pb-14 lg:grid-cols-12 lg:items-end">
+          <h1 className="font-display text-[clamp(2.6rem,7vw,5.4rem)] leading-[0.94] tracking-[-0.015em] lg:col-span-8">
+            {event.title}
+          </h1>
+          <div className="lg:col-span-4 lg:col-start-9 lg:justify-self-end">
+            <EventStatusTag status={event.status} tone="dark" />
+          </div>
+        </div>
+        <EventCover
+          slug={event.slug}
+          title={event.title}
+          coverImage={event.coverImage}
+          priority
+          className="aspect-[4/3] w-full sm:aspect-[16/9]"
+        />
+      </header>
+
+      <section aria-label="Informações do evento" className="bg-wine text-beige">
+        <dl className="mx-auto grid max-w-[96rem] gap-8 px-5 py-12 sm:grid-cols-3 sm:px-8">
+          <div className="border-t border-beige/30 pt-4">
+            <dt className="text-xs font-medium tracking-[0.16em] text-beige/75 uppercase">
+              Data
+            </dt>
+            <dd className="mt-2 text-lg leading-snug">
+              {formatDateTimeRange(event.startsAt, event.endsAt)}
+            </dd>
+          </div>
+          <div className="border-t border-beige/30 pt-4">
+            <dt className="text-xs font-medium tracking-[0.16em] text-beige/75 uppercase">
+              Local
+            </dt>
+            <dd className="mt-2 text-lg leading-snug">{event.venue}</dd>
+          </div>
+          <div className="border-t border-beige/30 pt-4">
+            <dt className="text-xs font-medium tracking-[0.16em] text-beige/75 uppercase">
+              Cidade
+            </dt>
+            <dd className="mt-2 text-lg leading-snug">{event.location}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section aria-labelledby="sobre-evento" className="bg-beige text-brown-deep">
+        <div className="mx-auto grid max-w-[96rem] gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <h2
+              id="sobre-evento"
+              className="font-subtitle text-[clamp(1.8rem,4vw,2.8rem)] leading-tight"
+            >
+              Sobre o evento
+            </h2>
+            <p className="mt-6 max-w-[68ch] text-[1.0625rem] leading-[1.75] text-brown-raised whitespace-pre-line">
+              {event.description}
+            </p>
+          </div>
+          <div className="lg:col-span-4 lg:col-start-9">
+            <div className="border-t border-brown-deep/25 pt-6">
+              <p className="text-[1.0625rem] leading-[1.75]">
+                Viveu este evento? Conte como foi no Feed, de forma anônima.
+              </p>
+              <ActionLink
+                href={`/feed?evento=${event.slug}`}
+                variant="wine"
+                className="mt-6 w-full sm:w-auto"
+              >
+                Relatar este evento
+              </ActionLink>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="relatos-do-evento"
+        className="bg-beige-light text-brown-deep"
+      >
+        <div className="mx-auto max-w-[96rem] px-5 py-16 sm:px-8 sm:py-20">
+          <h2
+            id="relatos-do-evento"
+            className="font-display text-[clamp(2rem,5vw,3.4rem)] leading-[0.95] tracking-[-0.015em]"
+          >
+            Relatos deste evento
+          </h2>
+          {relatedPosts.length > 0 ? (
+            <div className="mt-10">
+              {relatedPosts.map((post) => (
+                <PostEntry key={post.id} post={post} />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-10 border-t border-brown-deep/20 pt-8 font-subtitle text-2xl">
+              Ainda não há relatos deste evento. O primeiro pode ser o seu.
+            </p>
+          )}
+        </div>
+      </section>
+    </article>
+  );
+}

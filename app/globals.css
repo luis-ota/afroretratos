@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+/*
+ * Identidade AfroRetratos: tokens.
+ * Cores oficiais: Vinho #510000, Verde oliva #514D32, Marrom #452A21,
+ * Bege #CCB49A. As variacoes abaixo existem apenas para hover, emendas e
+ * estados; nenhuma cor principal nova e introduzida.
+ *
+ * Tipografia oficial: Hero Kawig (display), Ethna (subtitulo), Ubuntu (texto).
+ * Os arquivos das duas faces proprietarias ainda nao estao no projeto.
+ * Fallbacks temporarios documentados:
+ *   - Hero Kawig  -> Archivo Black (carregada via next/font/google)
+ *   - Ethna       -> Bodoni Moda (carregada via next/font/google)
+ * Para ativar as fontes oficiais, coloque os arquivos em
+ * public/fonts/hero-kawig.woff2 e public/fonts/ethna.woff2 e descomente os
+ * @font-face abaixo. Mais detalhes em public/fonts/README.md.
+ */
+@theme {
+  --color-wine: #510000;
+  --color-wine-deep: #3a0000;
+
+  --color-olive: #514d32;
+  --color-olive-deep: #3f3c26;
+
+  --color-brown: #452a21;
+  --color-brown-raised: #533429;
+  --color-brown-deep: #331d15;
+
+  --color-beige: #ccb49a;
+  --color-beige-light: #ddcbb5;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+
+  --font-display:
+    "Hero Kawig", var(--font-display-fallback), "Arial Black", sans-serif;
+  --font-subtitle:
+    "Ethna", var(--font-subtitle-fallback), Georgia, serif;
+  --font-body: var(--font-body-loaded), "Ubuntu", system-ui, sans-serif;
+}
+
+/* @font-face oficiais (descomente quando os arquivos estiverem em public/fonts):
+@font-face {
+  font-family: "Hero Kawig";
+  src: url("/fonts/hero-kawig.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Ethna";
+  src: url("/fonts/ethna.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 400;
+}
+*/
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background-color: var(--color-beige);
+  color: var(--color-brown-deep);
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-beige-light);
+  color: var(--color-wine);
+  text-shadow: none;
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+a,
+button {
+  text-underline-offset: 0.22em;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Movimento. Regras: nada de esconder conteudo ate o scroll (reveal no
+ * scroll esconde texto de quem nao rola); animacoes sao de entrada, de
+ * interacao ou de insercao, sempre em transform/opacity/clip-path, com
+ * cubic-bezier(0.16, 1, 0.3, 1) (saida exponencial) e respeito total a
+ * prefers-reduced-motion.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes afro-hero-enter {
+    from {
+      opacity: 0.001;
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  [data-hero-enter] {
+    animation: afro-hero-enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  [data-hero-enter="2"] {
+    animation-delay: 0.14s;
+  }
+
+  [data-hero-enter="3"] {
+    animation-delay: 0.28s;
+  }
+
+  /* Menu movel: abre como uma cortina de tecido, fecha de volta. */
+  @keyframes afro-menu-in {
+    from {
+      opacity: 0;
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes afro-menu-out {
+    from {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+    to {
+      opacity: 0;
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  @keyframes afro-menu-item-in {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .afro-menu-in {
+    animation: afro-menu-in 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .afro-menu-out {
+    animation: afro-menu-out 0.24s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+
+  .afro-menu-item {
+    animation: afro-menu-item-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Relato recem-publicado entra como um retalho costurado a lista. */
+  @keyframes afro-post-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.6rem);
+      background-color: var(--color-beige-light);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      background-color: transparent;
+    }
+  }
+
+  .afro-post-in {
+    animation: afro-post-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Estados de sistema impressos: mensagem de sucesso do Feed. */
+  @keyframes afro-print-in {
+    from {
+      opacity: 0;
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .afro-print-in {
+    animation: afro-print-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}

@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.gitignore
+.env*
+!.env.example
+.impeccable
+coverage
+*.md
+!public/**/*.md
+*.pdf
+tests
+.vscode
+.idea
+.DS_Store
+docker-compose*.yml

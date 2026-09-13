@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-11T00:00:00.000Z",
+  "title": "Design System: AfroRetratos",
+  "extensions": {
+    "colorMeta": {
+      "wine": {
+        "role": "primary",
+        "displayName": "Vinho Afroretratos",
+        "canonical": "oklch(27.3% 0.1121 29.2)",
+        "tonalRamp": ["#230000", "#500000", "#75271f", "#9c4a3f", "#c46d61", "#ec9284", "#ffc4ba", "#ffe9e5"]
+      },
+      "wine-deep": {
+        "role": "primary",
+        "displayName": "Vinho Profundo",
+        "canonical": "oklch(21.9% 0.0898 29.2)",
+        "tonalRamp": ["#230000", "#490e09", "#6d2f27", "#935147", "#b97469", "#e1988d", "#ffc4ba", "#ffe9e5"]
+      },
+      "olive": {
+        "role": "secondary",
+        "displayName": "Verde Oliva",
+        "canonical": "oklch(41.7% 0.042 100.8)",
+        "tonalRamp": ["#0f0b00", "#2b270d", "#4a462b", "#6b674b", "#8e8a6d", "#b3af91", "#dad6b6", "#f4f0d0"]
+      },
+      "olive-deep": {
+        "role": "secondary",
+        "displayName": "Oliva Profundo",
+        "canonical": "oklch(35.3% 0.0356 101.4)",
+        "tonalRamp": ["#0e0b00", "#2a2712", "#49462f", "#6a6750", "#8d8a72", "#b2af96", "#d9d5bb", "#f3f0d5"]
+      },
+      "brown": {
+        "role": "tertiary",
+        "displayName": "Marrom",
+        "canonical": "oklch(31.6% 0.0436 39.2)",
+        "tonalRamp": ["#1a0401", "#391f16", "#5a3d34", "#7d5e54", "#a18176", "#c7a59a", "#efcbbf", "#ffe9e2"]
+      },
+      "brown-raised": {
+        "role": "tertiary",
+        "displayName": "Marrom Elevado",
+        "canonical": "oklch(35.9% 0.0488 40.3)",
+        "tonalRamp": ["#1b0300", "#3a1e13", "#5c3c31", "#7f5d51", "#a48073", "#caa497", "#f2cabc", "#ffe9e1"]
+      },
+      "brown-deep": {
+        "role": "tertiary",
+        "displayName": "Marrom Profundo",
+        "canonical": "oklch(25.8% 0.0378 40.7)",
+        "tonalRamp": ["#180501", "#362018", "#573e35", "#7a5f56", "#9e8278", "#c4a79c", "#ebcdc2", "#ffe9e1"]
+      },
+      "beige": {
+        "role": "neutral",
+        "displayName": "Bege",
+        "canonical": "oklch(78.4% 0.0451 69.3)",
+        "tonalRamp": ["#170700", "#35220b", "#55412a", "#77624a", "#9b856c", "#c1a990", "#e8d0b5", "#ffebd5"]
+      },
+      "beige-light": {
+        "role": "neutral",
+        "displayName": "Bege Claro",
+        "canonical": "oklch(85.1% 0.036 72.8)",
+        "tonalRamp": ["#140800", "#312412", "#51422f", "#736350", "#978672", "#bcab96", "#e3d1bb", "#feebd5"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (Hero Kawig)",
+        "purpose": "Títulos de página e seção em escala colossal, caixa baixa, tracking negativo leve. Fallback declarado: Archivo Black."
+      },
+      "subtitle": {
+        "displayName": "Subtítulo (Ethna)",
+        "purpose": "Nomes de evento, títulos de bloco e estados vazios impressos. Fallback declarado: Bodoni Moda."
+      },
+      "body": {
+        "displayName": "Corpo (Ubuntu)",
+        "purpose": "Relatos, descrições e textos de apoio em 65-75ch."
+      },
+      "label": {
+        "displayName": "Rótulo",
+        "purpose": "Status, navegação e metadados em caixa alta com tracking largo."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-expo-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Padrão para entradas, morfos e hovers; saída exponencial."
+      },
+      {
+        "name": "menu-open",
+        "value": "360ms ease-expo-out, clip-path inset(0 0 100% 0) → inset(0)",
+        "purpose": "Abertura do menu móvel como cortina de tecido."
+      },
+      {
+        "name": "menu-close",
+        "value": "240ms cubic-bezier(0.4, 0, 1, 1), clip-path inverso",
+        "purpose": "Fechamento do menu móvel."
+      },
+      {
+        "name": "hamburger-morph",
+        "value": "320ms ease-expo-out (rotate/translate/scale)",
+        "purpose": "Hambúrguer vira X e volta, no mesmo pixel da tela."
+      },
+      {
+        "name": "post-insert",
+        "value": "500ms ease-expo-out (translateY -0.6rem + flash bege)",
+        "purpose": "Relato recém-publicado se costura à lista."
+      },
+      {
+        "name": "hero-enter",
+        "value": "900ms ease-expo-out (clip-path + opacity, 3 tempos)",
+        "purpose": "Entrada autoral do hero no carregamento."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão Primário (bege)",
+      "kind": "button",
+      "refersTo": "button-beige",
+      "description": "Ação principal sobre campos escuros; largura total no celular.",
+      "html": "<button class=\"ds-btn-beige\">Ver eventos</button>",
+      "css": ".ds-btn-beige { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; background: var(--color-beige); color: var(--color-wine); border: 0; border-radius: 10px; font-family: var(--font-body); font-size: 14px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-beige:hover { background: var(--color-beige-light); } .ds-btn-beige:focus-visible { outline: 2px solid var(--color-beige-light); outline-offset: 3px; } .ds-btn-beige:disabled { opacity: 0.6; cursor: not-allowed; }"
+    },
+    {
+      "name": "Botão Vinho",
+      "kind": "button",
+      "refersTo": "button-wine",
+      "description": "Ação principal sobre campos beges.",
+      "html": "<button class=\"ds-btn-wine\">Relatar este evento</button>",
+      "css": ".ds-btn-wine { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: 12px 24px; background: var(--color-wine); color: var(--color-beige); border: 0; border-radius: 10px; font-family: var(--font-body); font-size: 14px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-wine:hover { background: var(--color-wine-deep); } .ds-btn-wine:focus-visible { outline: 2px solid var(--color-wine); outline-offset: 3px; }"
+    },
+    {
+      "name": "Botão Contorno",
+      "kind": "button",
+      "refersTo": "button-outline-dark",
+      "description": "Ação secundária sobre bege; inverte no hover.",
+      "html": "<button class=\"ds-btn-outline\">Todos os eventos</button>",
+      "css": ".ds-btn-outline { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: 12px 24px; background: transparent; color: var(--color-brown-deep); border: 1px solid color-mix(in oklab, var(--color-brown-deep) 40%, transparent); border-radius: 10px; font-family: var(--font-body); font-size: 14px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1), color 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-outline:hover { background: var(--color-brown-deep); color: var(--color-beige); } .ds-btn-outline:focus-visible { outline: 2px solid var(--color-brown-deep); outline-offset: 3px; }"
+    },
+    {
+      "name": "Campo do Feed",
+      "kind": "input",
+      "refersTo": "field-on-wine",
+      "description": "Textarea bege sobre o bloco vinho do formulário anônimo.",
+      "html": "<label class=\"ds-field\"><span>Seu relato</span><textarea rows=\"4\" placeholder=\"Escreva com suas palavras o que você viveu, viu ou sentiu.\"></textarea></label>",
+      "css": ".ds-field { display: block; font-family: var(--font-body); color: var(--color-beige); } .ds-field span { display: block; font-size: 14px; font-weight: 500; } .ds-field textarea { margin-top: 8px; width: 100%; padding: 12px 16px; background: var(--color-beige); color: var(--color-brown-deep); border: 1px solid color-mix(in oklab, var(--color-beige) 40%, transparent); border-radius: 10px; font-family: var(--font-body); font-size: 16px; line-height: 1.7; resize: vertical; transition: border-color 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-field textarea::placeholder { color: var(--color-brown-raised); } .ds-field textarea:focus { border-color: var(--color-beige); } .ds-field textarea:focus-visible { outline: 2px solid var(--color-beige-light); outline-offset: 3px; }"
+    },
+    {
+      "name": "Etiqueta de Status",
+      "kind": "chip",
+      "refersTo": "status-upcoming",
+      "description": "Status de evento com rótulo escrito obrigatório; nunca só cor.",
+      "html": "<span class=\"ds-status-upcoming\">Em breve</span><span class=\"ds-status-cancelled\">Cancelado</span>",
+      "css": ".ds-status-upcoming, .ds-status-cancelled { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 0; font-family: var(--font-body); font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; border-radius: 6px; } .ds-status-upcoming { border: 1px solid var(--color-olive-deep); color: var(--color-olive-deep); background: transparent; } .ds-status-cancelled { border: 1px solid var(--color-wine); background: var(--color-wine); color: var(--color-beige); }"
+    },
+    {
+      "name": "Faixa de Evento",
+      "kind": "card",
+      "description": "Linha de altura inteira da agenda: data colossal, título Ethna, status e seta; hover lava o fundo e desloca a seta.",
+      "html": "<a class=\"ds-event-strip\" href=\"#\"><span class=\"ds-event-date\"><b>27</b><i>SET 2026<br>Domingo</i></span><span class=\"ds-event-body\"><strong>Lorem Ipsum, Edição Primeira</strong><em>Espaço provisório · São Paulo, SP</em></span><span class=\"ds-event-meta\"><span class=\"ds-status-upcoming\">Em breve</span><svg viewBox=\"0 0 24 12\" aria-hidden=\"true\"><path d=\"M0 6 H21.5 M16 1.5 L21.5 6 L16 10.5\"/></svg></span></a>",
+      "css": ".ds-event-strip { display: grid; grid-template-columns: 8.5rem 1fr auto; gap: 40px; align-items: center; padding: 32px 0; border-top: 1px solid color-mix(in oklab, var(--color-brown-deep) 20%, transparent); font-family: var(--font-body); color: var(--color-brown-deep); text-decoration: none; transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-event-strip:hover { background: color-mix(in oklab, var(--color-brown-deep) 5%, transparent); } .ds-event-date b { display: block; font-family: var(--font-display); font-size: 52px; line-height: 1; font-variant-numeric: tabular-nums; } .ds-event-date i { font-style: normal; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-brown-raised); } .ds-event-body strong { font-family: var(--font-subtitle); font-size: 26px; font-weight: 600; } .ds-event-body em { display: block; font-style: normal; font-size: 14px; margin-top: 6px; color: var(--color-brown-raised); } .ds-event-meta { display: flex; align-items: center; gap: 20px; } .ds-event-meta svg { width: 24px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.5; transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-event-strip:hover .ds-event-meta svg { transform: translateX(6px); }"
+    },
+    {
+      "name": "Link de Navegação",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Link de navegação desktop com sublinhado que cresce da esquerda; ativo fica marcado.",
+      "html": "<a class=\"ds-nav-link is-active\" href=\"#\">Eventos</a>",
+      "css": ".ds-nav-link { position: relative; padding-bottom: 4px; color: color-mix(in oklab, var(--color-beige) 80%, transparent); font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; transition: color 200ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-nav-link::after { content: \"\"; position: absolute; inset: auto 0 0 0; height: 1px; background: var(--color-beige); transform: scaleX(0); transform-origin: left; transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-nav-link:hover { color: var(--color-beige); } .ds-nav-link:hover::after, .ds-nav-link.is-active::after { transform: scaleX(1); } .ds-nav-link.is-active { color: var(--color-beige); }"
+    },
+    {
+      "name": "Menu Móvel (hambúrguer que morfa)",
+      "kind": "custom",
+      "description": "O mesmo botão no mesmo pixel: duas barras giram 45 graus e deslizam 5,25px, a do meio encolhe. O overlay é uma cortina vinho com links em cascata.",
+      "html": "<button class=\"ds-menu-toggle is-open\" aria-expanded=\"true\"><span class=\"ds-menu-bars\"><span class=\"ds-bar ds-bar-top\"></span><span class=\"ds-bar ds-bar-mid\"></span><span class=\"ds-bar ds-bar-bottom\"></span></span><span class=\"sr-only\">Fechar menu</span></button>",
+      "css": ".ds-menu-toggle { display: flex; width: 44px; height: 44px; align-items: center; justify-content: center; background: var(--color-wine); color: var(--color-beige); border: 0; cursor: pointer; } .ds-menu-bars { position: relative; display: block; width: 28px; height: 12px; } .ds-bar { position: absolute; left: 0; height: 1.5px; background: currentColor; transition: all 320ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-bar-top { top: 0; width: 100%; } .ds-bar-mid { top: 50%; width: 100%; transform: translateY(-50%); } .ds-bar-bottom { bottom: 0; width: 66%; } .ds-menu-toggle.is-open .ds-bar-top { width: 100%; transform: translateY(5.25px) rotate(45deg); } .ds-menu-toggle.is-open .ds-bar-mid { transform: translateY(-50%) scaleX(0); opacity: 0; } .ds-menu-toggle.is-open .ds-bar-bottom { width: 100%; transform: translateY(-5.25px) rotate(-45deg); } .ds-menu-toggle:focus-visible { outline: 2px solid var(--color-beige-light); outline-offset: 3px; }"
+    },
+    {
+      "name": "Faixa Tecida",
+      "kind": "custom",
+      "description": "Franja decorativa de 12px com as quatro cores oficiais em larguras irregulares; separa campos de cor e nunca carrega informação.",
+      "html": "<div class=\"ds-weave\" aria-hidden=\"true\"><span style=\"width:31%;background:#510000\"></span><span style=\"width:17%;background:#514d32\"></span><span style=\"width:11%;background:#452a21\"></span><span style=\"width:23%;background:#3a0000\"></span><span style=\"width:18%;background:#3f3c26\"></span></div>",
+      "css": ".ds-weave { display: flex; width: 100%; height: 12px; } .ds-weave span { display: block; height: 100%; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "O Panô",
+    "overview": "O AfroRetratos não monta páginas em caixas: ele costura um panô. Cada superfície é feita de faixas de cor inteiras, emendas francas de 1px e módulos que avançam em ritmo irregular, como retalhos de tecido. O sistema carrega a identidade oficial — vinho, oliva, marrom e bege, com Hero Kawig, Ethna e Ubuntu — sem véu de SaaS: nenhum card com sombra, nenhum gradiente, nenhum canto arredondado, nenhuma cor que não venha do manual. A densidade alterna: campos drenados de vinho com tipografia colossal e silêncio ao redor, seguidos por blocos de leitura em bege com medida de 65–75ch. Assimetria é regra: títulos deslocados, blocos que vazam para a borda, faixas de larguras diferentes. Movimento é escasso e autoral: uma entrada no hero, o morfo do menu móvel, o relato que se costura à lista ao ser publicado.",
+    "keyCharacteristics": [
+      "Quatro cores oficiais como campos inteiros, nunca como acentos decorativos.",
+      "Emenda de 1px separa conteúdo; não existe borda de card.",
+      "Cantos vivos, zero sombra, zero vidro, zero gradiente.",
+      "Tipografia em contraste extremo: display colossal contra corpo contido.",
+      "Composição assimétrica com vazamentos para a borda no desktop.",
+      "Mobile preserva o panô: faixas, datas gigantes e assimetria continuam."
+    ],
+    "rules": [
+      {
+        "name": "A Regra do Campo Inteiro",
+        "body": "Cor ocupa regiões, não detalhes. Uma seção é vinho, oliva, marrom ou bege de ponta a ponta; nenhuma cor oficial é usada como \"accent\" espalhado sobre um fundo neutro.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra do Contraste no Oliva",
+        "body": "Texto bege puro sobre oliva falha AA (4,3:1). Sobre oliva, o texto é Bege Claro; sobre vinho e marrom, bege puro.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra da Fonte Oficial",
+        "body": "Hero Kawig e Ethna nunca são substituídas em silêncio: quando os arquivos não existem, o fallback é declarado no código e a troca é automática quando os .woff2 oficiais chegam.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Caixa-Alta Curto",
+        "body": "Caixa alta só em rótulos com menos de ~30 caracteres; texto corrido nunca é capitalizado.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Plano por Padrão",
+        "body": "Nenhuma superfície recebe sombra. Se algo precisa de destaque, muda de campo de cor ou ganha uma emenda — nunca uma sombra.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do usar as quatro cores oficiais em campos inteiros e alternar fundos entre seções.",
+      "Do manter cantos vivos e emendas de 1px como único sistema de borda.",
+      "Do usar Bege Claro para texto sobre Oliva (5,4:1) e bege puro sobre vinho/marrom.",
+      "Do deixar a display em escala colossal com tracking negativo leve (-0.015em) e a leitura em 65–75ch.",
+      "Do animar transform/opacity/clip-path com cubic-bezier(0.16,1,0.3,1) e respeitar prefers-reduced-motion."
+    ],
+    "donts": [
+      "Don't usar pill, raios grandes ou cards flutuantes; o teto é 8px em elementos interativos.",
+      "Don't transformar conteúdo em cards empilhados; a faixa é a unidade.",
+      "Don't introduzir cor fora da paleta oficial (nem azul/roxo de startup).",
+      "Don't comunicar status apenas por cor.",
+      "Don't esconder texto atrás de animação de scroll; o conteúdo existe visível por padrão.",
+      "Don't substituir Hero Kawig ou Ethna silenciosamente; fallback é explícito e documentado."
+    ]
+  }
+}

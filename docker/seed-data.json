@@ -1,0 +1,75 @@
+{
+  "events": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "slug": "manifesto",
+      "title": "Manifesto",
+      "description": "Apresentar o projeto e explicar qual o nosso objetivo, propósito e missão ao longo do semestre, bem como a marca positiva que pretendemos deixar no mundo.",
+      "coverImage": null,
+      "startsAt": "2026-09-21T00:00:00-03:00",
+      "endsAt": "2026-09-25T00:00:00-03:00",
+      "venue": "A definir",
+      "location": "Curitiba, PR",
+      "status": "upcoming",
+      "createdAt": "2026-09-13T00:00:00-03:00",
+      "updatedAt": "2026-09-13T00:00:00-03:00"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "slug": "roda-de-conversa-pucpr",
+      "title": "Roda de Conversa PUCPR",
+      "description": "Promover encontros com pessoas negras, mostrando suas trajetórias profissionais, desafios e conquistas e discutindo como a representatividade pode influenciar a autoestima e o sentimento de pertencimento.",
+      "coverImage": null,
+      "startsAt": "2026-09-28T00:00:00-03:00",
+      "endsAt": "2026-10-02T00:00:00-03:00",
+      "venue": "PUCPR",
+      "location": "Curitiba, PR",
+      "status": "upcoming",
+      "createdAt": "2026-09-13T00:00:00-03:00",
+      "updatedAt": "2026-09-13T00:00:00-03:00"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "slug": "dia-das-criancas",
+      "title": "Dia das Crianças",
+      "description": "Promover a autoestima e a valorização da identidade de crianças negras por meio de histórias infantis que apresentem personagens negros de forma positiva, abordando temas como cabelo, beleza, identidade e representatividade. A atividade busca apresentar referências negras positivas desde a infância, ajudando as crianças a reconhecerem sua própria beleza e identidade e mostrando que existem personagens e histórias que se parecem com elas.",
+      "coverImage": null,
+      "startsAt": "2026-10-05T00:00:00-03:00",
+      "endsAt": "2026-10-09T00:00:00-03:00",
+      "venue": "A definir",
+      "location": "Curitiba, PR",
+      "status": "upcoming",
+      "createdAt": "2026-09-13T00:00:00-03:00",
+      "updatedAt": "2026-09-13T00:00:00-03:00"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000004",
+      "slug": "roda-de-conversa-coletivo-preto",
+      "title": "Roda de Conversa Coletivo Preto",
+      "description": "Promover encontros com pessoas negras, mostrando suas trajetórias profissionais, desafios e conquistas e discutindo como a representatividade pode influenciar a autoestima e o sentimento de pertencimento.",
+      "coverImage": null,
+      "startsAt": "2026-10-12T00:00:00-03:00",
+      "endsAt": "2026-10-16T00:00:00-03:00",
+      "venue": "Coletivo Preto",
+      "location": "Curitiba, PR",
+      "status": "upcoming",
+      "createdAt": "2026-09-13T00:00:00-03:00",
+      "updatedAt": "2026-09-13T00:00:00-03:00"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000005",
+      "slug": "evento-de-beleza",
+      "title": "Evento de Beleza",
+      "description": "O Evento de Beleza, Estética e Identidade Negra será um espaço de valorização da beleza, da identidade e da autoestima da população negra, aberto para homens, mulheres e crianças. A proposta é promover uma experiência de cuidado, expressão e reconhecimento, criando um ambiente em que cada participante possa conhecer, valorizar e celebrar suas próprias características.",
+      "coverImage": null,
+      "startsAt": "2026-11-07T00:00:00-03:00",
+      "endsAt": null,
+      "venue": "A definir",
+      "location": "Curitiba, PR",
+      "status": "upcoming",
+      "createdAt": "2026-09-13T00:00:00-03:00",
+      "updatedAt": "2026-09-13T00:00:00-03:00"
+    }
+  ],
+  "posts": []
+}
