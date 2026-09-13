@@ -15,6 +15,7 @@ export default async function AdminDashboardPage() {
     { label: "Posts ativos", value: counts.posts.active },
     { label: "Ocultos", value: counts.posts.hidden },
     { label: "Removidos", value: counts.posts.removed },
+    { label: "Eventos", value: counts.events },
     { label: "Denúncias", value: counts.reports },
     { label: "Origens bloqueadas", value: counts.blocked },
   ];
@@ -28,7 +29,7 @@ export default async function AdminDashboardPage() {
         >
           Visão geral
         </h1>
-        <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-brown-deep/15 bg-brown-deep/15 sm:grid-cols-5">
+        <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-brown-deep/15 bg-brown-deep/15 sm:grid-cols-3 lg:grid-cols-6">
           {stats.map((stat) => (
             <div key={stat.label} className="bg-beige p-5">
               <dt className="text-xs font-medium tracking-[0.14em] text-brown-raised uppercase">

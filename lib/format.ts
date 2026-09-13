@@ -96,8 +96,7 @@ export function formatDateTimeRange(
     : `${formatEventDate(startsAt)}, ${formatEventTime(startsAt)}`;
   if (!endsAt) return start;
 
-  const sameDay =
-    new Date(startsAt).toDateString() === new Date(endsAt).toDateString();
+  const sameDay = formatEventDate(startsAt) === formatEventDate(endsAt);
   if (sameDay) {
     return startAllDay
       ? start
@@ -108,4 +107,19 @@ export function formatDateTimeRange(
     ? formatEventDate(endsAt)
     : `${formatEventDate(endsAt)}, ${formatEventTime(endsAt)}`;
   return `${start} até ${end}`;
+}
+
+/** Valor para <input type="date"> no fuso do projeto (YYYY-MM-DD). */
+export function eventInputDate(value: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: TIME_ZONE,
+  }).format(new Date(value));
+}
+
+/** Valor para <input type="time">; vazio quando o evento e de dia inteiro. */
+export function eventInputTime(value: string): string {
+  return isAllDay(value) ? "" : timeOnlyFormatter.format(new Date(value));
 }

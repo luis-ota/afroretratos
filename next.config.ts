@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 // Cabecalhos de seguranca aplicados a todas as respostas. O site nao carrega
 // nada de terceiros (fontes sao auto-hospedadas via next/font), entao um CSP
 // restrito funciona; 'unsafe-inline' cobre os scripts de hidratacao do Next.
+// Em desenvolvimento o React usa eval() para reconstruir stack traces;
+// em producao ele nunca usa, entao o CSP fica estrito.
+const devEval = process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'";
+
 const securityHeaders = [
   {
     key: "Strict-Transport-Security",
@@ -22,7 +26,7 @@ const securityHeaders = [
       "default-src 'self'",
       // Excecao unica: beacon de Web Analytics que a Cloudflare injeta no
       // proprio dominio. Nada mais de terceiros roda na pagina.
-      "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+      `script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com${devEval}`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data:",
       "font-src 'self'",

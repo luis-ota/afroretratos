@@ -301,6 +301,7 @@ export async function getOriginStats(ipHash: string): Promise<OriginStats> {
 
 export type AdminCounts = {
   posts: { total: number; active: number; hidden: number; removed: number };
+  events: number;
   reports: number;
   blocked: number;
 };
@@ -321,6 +322,7 @@ export async function getAdminCounts(): Promise<AdminCounts> {
       .select({ value: count() })
       .from(posts)
       .where(eq(posts.status, "removed"));
+    const [eventCount] = await db.select({ value: count() }).from(events);
     const [reportCount] = await db.select({ value: count() }).from(reports);
     const [blockedCount] = await db
       .select({ value: count() })
@@ -332,6 +334,7 @@ export async function getAdminCounts(): Promise<AdminCounts> {
         hidden: Number(hidden?.value ?? 0),
         removed: Number(removed?.value ?? 0),
       },
+      events: Number(eventCount?.value ?? 0),
       reports: Number(reportCount?.value ?? 0),
       blocked: Number(blockedCount?.value ?? 0),
     };
@@ -344,6 +347,7 @@ export async function getAdminCounts(): Promise<AdminCounts> {
       hidden: store.posts.filter((post) => post.status === "hidden").length,
       removed: store.posts.filter((post) => post.status === "removed").length,
     },
+    events: store.events.length,
     reports: store.reports.length,
     blocked: store.blocked.length,
   };

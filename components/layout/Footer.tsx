@@ -40,7 +40,20 @@ export function Footer() {
           </nav>
         </div>
         <div className="mt-12 flex flex-col gap-2 border-t border-beige/25 pt-6 text-xs text-beige/85 sm:flex-row sm:items-start sm:justify-between sm:gap-10">
-          <p className="shrink-0">© {year} AfroRetratos</p>
+          <div className="flex shrink-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-4">
+            <p>© {year} AfroRetratos</p>
+            <p>
+              Desenvolvido por{" "}
+              <a
+                href="https://portfolio.wired.rs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-beige/40 hover:decoration-beige"
+              >
+                Wired Co.
+              </a>
+            </p>
+          </div>
           <p className="max-w-[60ch] leading-relaxed sm:text-right">
             Projeto IV: Production Design · PUCPR
             <br />

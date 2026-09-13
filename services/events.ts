@@ -1,6 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
-import { mockDb } from "@/lib/db/mock-store";
+import { mockDb, newId } from "@/lib/db/mock-store";
 import { events } from "@/lib/db/schema";
 import type { EventOption, EventStatus, PublicEvent } from "@/lib/types";
 
@@ -119,4 +119,120 @@ export function splitEvents(events: PublicEvent[]): {
   upcoming.sort((a, b) => a.startsAt.localeCompare(b.startsAt));
   past.sort((a, b) => b.startsAt.localeCompare(a.startsAt));
   return { upcoming, past };
+}
+
+// ---------------------------------------------------------------------------
+// CRUD do painel de moderacao
+// ---------------------------------------------------------------------------
+
+export type EventWriteInput = {
+  title: string;
+  slug: string;
+  description: string;
+  coverImage: string | null;
+  startsAt: string;
+  endsAt: string | null;
+  venue: string;
+  location: string;
+  status: EventStatus;
+};
+
+export async function isSlugTaken(
+  slug: string,
+  excludeId?: string,
+): Promise<boolean> {
+  const db = getDb();
+  if (db) {
+    const rows = await db
+      .select({ id: events.id })
+      .from(events)
+      .where(eq(events.slug, slug))
+      .limit(1);
+    return rows.some((row) => row.id !== excludeId);
+  }
+  return mockDb().events.some(
+    (event) => event.slug === slug && event.id !== excludeId,
+  );
+}
+
+/** Resolve colisoes de slug acrescentando -2, -3, ... */
+export async function uniqueSlug(
+  base: string,
+  excludeId?: string,
+): Promise<string> {
+  const root = base || "evento";
+  let candidate = root;
+  let counter = 2;
+  while (await isSlugTaken(candidate, excludeId)) {
+    candidate = `${root}-${counter}`;
+    counter += 1;
+  }
+  return candidate;
+}
+
+function toRow(input: EventWriteInput) {
+  return {
+    ...input,
+    startsAt: new Date(input.startsAt),
+    endsAt: input.endsAt ? new Date(input.endsAt) : null,
+  };
+}
+
+export async function createEvent(input: EventWriteInput): Promise<PublicEvent> {
+  const db = getDb();
+  if (db) {
+    const [row] = await db.insert(events).values(toRow(input)).returning();
+    return toPublicEvent(row);
+  }
+
+  const store = mockDb();
+  const now = new Date().toISOString();
+  const row = {
+    id: newId(),
+    ...input,
+    createdAt: now,
+    updatedAt: now,
+  };
+  store.events.push(row);
+  return toPublicEvent(row);
+}
+
+export async function updateEvent(
+  id: string,
+  input: EventWriteInput,
+): Promise<PublicEvent | null> {
+  const db = getDb();
+  if (db) {
+    const [row] = await db
+      .update(events)
+      .set({ ...toRow(input), updatedAt: new Date() })
+      .where(eq(events.id, id))
+      .returning();
+    return row ? toPublicEvent(row) : null;
+  }
+
+  const event = mockDb().events.find((item) => item.id === id);
+  if (!event) return null;
+  Object.assign(event, input, { updatedAt: new Date().toISOString() });
+  return toPublicEvent(event);
+}
+
+export async function deleteEvent(id: string): Promise<boolean> {
+  const db = getDb();
+  if (db) {
+    const rows = await db
+      .delete(events)
+      .where(eq(events.id, id))
+      .returning({ id: events.id });
+    return rows.length > 0;
+  }
+
+  const store = mockDb();
+  const index = store.events.findIndex((item) => item.id === id);
+  if (index === -1) return false;
+  store.events.splice(index, 1);
+  for (const post of store.posts) {
+    if (post.eventId === id) post.eventId = null;
+  }
+  return true;
 }
