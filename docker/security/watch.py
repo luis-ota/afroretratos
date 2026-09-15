@@ -50,6 +50,9 @@ FAIL_RE = re.compile(
     r"|Bad protocol version identification|Unable to negotiate"
 )
 ACCEPT_RE = re.compile(r"Accepted (publickey|password)")
+USER_RE = re.compile(
+    r"(?:Failed password for (?:invalid user )?|Invalid user )([A-Za-z0-9._-]{1,32})"
+)
 
 
 def now() -> datetime:
@@ -109,16 +112,18 @@ class FileTail:
         return data.splitlines()
 
 
-def parse_line(line: str) -> tuple[str, str] | None:
-    """Retorna (tipo, ip) quando a linha e relevante."""
+def parse_line(line: str) -> tuple[str, str, str | None] | None:
+    """Retorna (tipo, ip, usuario) quando a linha e relevante."""
     if not line:
         return None
     found = IP_RE.search(line)
     ip = found.group(1) if found else None
+    user_match = USER_RE.search(line)
+    user = user_match.group(1) if user_match else None
     if FAIL_RE.search(line):
-        return ("auth_fail", ip or "desconhecido")
+        return ("auth_fail", ip or "desconhecido", user)
     if ACCEPT_RE.search(line):
-        return ("auth_ok", ip or "desconhecido")
+        return ("auth_ok", ip or "desconhecido", user)
     return None
 
 
@@ -126,6 +131,7 @@ class Watch:
     def __init__(self) -> None:
         self.tails = [FileTail(path) for path in LOG_PATHS]
         self.failures: dict[str, list[float]] = {}
+        self.usernames: dict[str, list[str]] = {}
         self.cooldowns: dict[str, tuple[float, int]] = {}
         self.alerts_sent = 0
         self.fails_24h = 0
@@ -133,12 +139,16 @@ class Watch:
         self.last_summary_date: str | None = None
 
     # ------------------------------------------------------------------ ssh
-    def register(self, kind: str, ip: str) -> None:
+    def register(self, kind: str, ip: str, user: str | None = None) -> None:
         if kind == "auth_ok":
             return
         stamps = self.failures.setdefault(ip, [])
         stamps.append(time.time())
         self.fails_24h += 1
+        if user:
+            names = self.usernames.setdefault(ip, [])
+            names.append(user)
+            self.usernames[ip] = names[-8:]
         cutoff = time.time() - SSH_WINDOW
         recent = [stamp for stamp in stamps if stamp >= cutoff]
         self.failures[ip] = recent
@@ -150,17 +160,22 @@ class Watch:
             return
 
         self.cooldowns[ip] = (time.time() + ALERT_COOLDOWN, len(recent))
+        names = list(dict.fromkeys(self.usernames.get(ip, [])))[:6]
+        users_line = (
+            f"Usuários tentados: {', '.join(names)}\n" if names else ""
+        )
         self.alert(
-            "Possivel forca bruta de SSH\n"
+            "Possível força bruta de SSH\n"
             f"IP: {ip}\n"
             f"Falhas: {len(recent)} em {SSH_WINDOW // 60} minutos\n"
+            f"{users_line}"
             f"Total hoje: {self.fails_24h}\n\n"
-            "Dica: bloqueie o IP no roteador/firewall ou desabilite senha no SSH "
-            "(apenas chave publica)."
+            "Não bloqueamos automaticamente. Para banir: sshguard ou regra no "
+            "roteador; e desabilite senha no SSH (apenas chave pública)."
         )
 
     def alert(self, text: str) -> None:
-        header = "Alerta de seguranca do servidor\n\n"
+        header = "Alerta de segurança do servidor\n\n"
         if send_telegram(header + text):
             self.alerts_sent += 1
             log("alerta enviado ao Telegram")
@@ -176,7 +191,9 @@ class Watch:
                 f"{usage.total / 1e9:.1f} GiB)"
             )
             if percent >= DISK_ALERT_PERCENT:
-                self.alert(f"Disco do servidor em {percent:.0f}% de uso.\n\n{lines[-1]}")
+                self.alert(
+                    f"Disco do servidor em {percent:.0f}% de uso.\n\n{lines[-1]}"
+                )
         except OSError:
             pass
         try:
@@ -185,10 +202,10 @@ class Watch:
                 re.search(r"MemAvailable:\s+(\d+) kB", meminfo).group(1)
             )
             available_mb = available_kb // 1024
-            lines.append(f"Memoria livre: {available_mb} MB")
+            lines.append(f"Memória livre: {available_mb} MB")
             if available_mb < MEM_ALERT_MB:
                 self.alert(
-                    f"Memoria disponivel baixa: {available_mb} MB no servidor."
+                    f"Memória disponível baixa: {available_mb} MB no servidor."
                 )
         except (OSError, AttributeError):
             pass
@@ -199,7 +216,7 @@ class Watch:
                 f"Carga: {load:.2f} · ligado ha {uptime_seconds / 3600:.1f} h"
             )
             if load > LOAD_ALERT:
-                self.alert(f"Carga alta no servidor: {load:.2f} (1 min).")
+                self.alert(f"Carga alta no servidor: {load:.2f} (1 minuto).")
         except (OSError, ValueError):
             pass
         return "\n".join(lines)
@@ -214,8 +231,8 @@ class Watch:
         ):
             self.last_summary_date = today
             self.alert(
-                "Resumo diario do AfroRetratos\n\n"
-                f"Falhas de SSH nas ultimas 24h: {self.fails_24h}\n"
+                "Resumo diário do AfroRetratos\n\n"
+                f"Falhas de SSH nas últimas 24h: {self.fails_24h}\n"
                 f"Alertas enviados: {self.alerts_sent}\n"
                 f"{self.host_status()}"
             )
@@ -229,9 +246,9 @@ class Watch:
             + ("; telegram configurado" if TOKEN and CHAT_ID else "; SEM telegram")
         )
         send_telegram(
-            "Vigia de seguranca iniciado no servidor AfroRetratos.\n"
-            "Voce recebera alertas de forca bruta, disco, memoria e carga, "
-            "alem de um resumo diario."
+            "Vigia de segurança iniciado no servidor AfroRetratos.\n"
+            "Você receberá alertas de força bruta, disco, memória e carga, "
+            "além de um resumo diário."
         )
         while True:
             for tail in self.tails:
@@ -262,7 +279,7 @@ if __name__ == "__main__":
     if "--self-test" in os.sys.argv:
         self_test()
     elif "--test-telegram" in os.sys.argv:
-        ok = send_telegram("Teste do vigia de seguranca do AfroRetratos.")
+        ok = send_telegram("Teste do vigia de segurança do AfroRetratos.")
         print("telegram ok" if ok else "telegram indisponivel")
     else:
         Watch().run()
