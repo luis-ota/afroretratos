@@ -18,6 +18,7 @@ export type MockEvent = {
 export type MockPost = {
   id: string;
   content: string;
+  contactEncrypted: string | null;
   eventId: string | null;
   ipHash: string;
   ipEncrypted: string | null;

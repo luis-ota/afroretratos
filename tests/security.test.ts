@@ -109,3 +109,15 @@ describe("encryptOrigin", () => {
     expect(decryptOrigin(corrupted)).toBeNull();
   });
 });
+
+describe("crypto genérico (contato do Feed)", () => {
+  test("faz roundtrip de um e-mail com a mesma chave", async () => {
+    const { encryptSecret, decryptSecret } = await import(
+      "../lib/security/crypto"
+    );
+    process.env.ORIGIN_ENCRYPTION_KEY = Buffer.alloc(32, 5).toString("base64");
+    const payload = encryptSecret("pessoa@exemplo.com");
+    expect(payload).not.toBeNull();
+    expect(decryptSecret(payload)).toBe("pessoa@exemplo.com");
+  });
+});

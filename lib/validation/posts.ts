@@ -32,8 +32,25 @@ const eventIdSchema = z
   .optional()
   .transform((value) => (value ? value : null));
 
+const emailSchema = z
+  .string()
+  .optional()
+  .default("")
+  .transform((value) => normalizeContent(value).trim())
+  .pipe(
+    z
+      .string()
+      .max(120, "E-mail muito longo.")
+      .refine(
+        (value) => value === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        "Informe um e-mail válido.",
+      ),
+  )
+  .transform((value) => (value.length > 0 ? value : null));
+
 export const createPostSchema = z.object({
   content: contentSchema,
+  email: emailSchema,
   eventId: eventIdSchema,
 });
 

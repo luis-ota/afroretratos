@@ -16,8 +16,8 @@ export function FeedInvite() {
           </h2>
           <p className="mt-6 max-w-[46ch] text-[1.0625rem] leading-[1.75] text-beige-light/90">
             Compartilhe sua vivência, um momento de afirmação ou uma ação do
-            projeto. Publicar não exige cadastro e sua identidade no Feed é
-            apenas Anônimo.
+            projeto. Publicar não exige cadastro e a identidade é apenas
+            Anônimo; o e-mail para a moderação é opcional e privado.
           </p>
         </div>
         <div className="flex flex-col justify-end gap-5 lg:col-span-5 lg:col-start-8">

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PostStatusBadge } from "@/components/admin/PostStatusBadge";
 import { Arrow } from "@/components/ui/Arrow";
-import { decryptOrigin } from "@/lib/security/crypto";
+import { decryptOrigin, decryptSecret } from "@/lib/security/crypto";
 import { formatPostTimestamp } from "@/lib/format";
 import {
   getModerationPost,
@@ -41,6 +41,7 @@ export default async function AdminPostDetailPage({ params }: Props) {
 
   const currentBlock = blocks.find((item) => item.ipHash === post.ipHash);
   const decryptedIp = decryptOrigin(post.ipEncrypted);
+  const decryptedEmail = decryptSecret(post.contactEncrypted);
   const returnTo = `/admin/posts/${post.id}`;
 
   return (
@@ -151,6 +152,18 @@ export default async function AdminPostDetailPage({ params }: Props) {
               {decryptedIp ?? (
                 <span className="text-brown-raised">
                   disponível apenas com ORIGIN_ENCRYPTION_KEY
+                </span>
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium tracking-[0.12em] text-brown-raised uppercase">
+              E-mail de contato
+            </dt>
+            <dd className="mt-2 text-sm">
+              {decryptedEmail ?? (
+                <span className="text-brown-raised">
+                  não informado (ou sem chave de criptografia)
                 </span>
               )}
             </dd>

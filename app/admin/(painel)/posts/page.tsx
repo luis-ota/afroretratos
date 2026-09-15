@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PostStatusBadge } from "@/components/admin/PostStatusBadge";
 import { formatPostTimestamp } from "@/lib/format";
 import type { PostStatus } from "@/lib/types";
+import { listEvents } from "@/services/events";
 import { listModerationPosts } from "@/services/moderation";
 import { updatePostStatusAction } from "../actions";
 
@@ -18,7 +19,12 @@ const BUTTON =
   "rounded-md border border-brown-deep/40 px-3 py-1.5 text-xs font-medium tracking-[0.08em] uppercase transition-colors hover:bg-brown-deep hover:text-beige";
 
 type Props = {
-  searchParams: Promise<{ status?: string; origem?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    origem?: string;
+    q?: string;
+    evento?: string;
+  }>;
 };
 
 export default async function AdminPostsPage({ searchParams }: Props) {
@@ -31,15 +37,31 @@ export default async function AdminPostsPage({ searchParams }: Props) {
       ? (requested as PostStatus)
       : null;
   const originHash = params.origem?.trim() || null;
+  const search = params.q?.trim() || null;
+  const eventFilter = params.evento?.trim() || null;
+  const events = await listEvents();
 
-  const posts = await listModerationPosts({ status, originHash, limit: 100 });
+  const posts = await listModerationPosts({
+    status,
+    originHash,
+    query: search,
+    eventId: eventFilter,
+    limit: 100,
+  });
 
-  const query = (next: { status?: string; origem?: string }) => {
-    const search = new URLSearchParams();
-    if (next.status && next.status !== "all") search.set("status", next.status);
-    if (next.origem) search.set("origem", next.origem);
-    const value = search.toString();
-    return value ? `/admin/posts?${value}` : "/admin/posts";
+  const query = (next: {
+    status?: string;
+    origem?: string;
+    q?: string;
+    evento?: string;
+  }) => {
+    const value = new URLSearchParams();
+    if (next.status && next.status !== "all") value.set("status", next.status);
+    if (next.origem) value.set("origem", next.origem);
+    if (next.q) value.set("q", next.q);
+    if (next.evento) value.set("evento", next.evento);
+    const params = value.toString();
+    return params ? `/admin/posts?${params}` : "/admin/posts";
   };
 
   return (
@@ -52,14 +74,69 @@ export default async function AdminPostsPage({ searchParams }: Props) {
         removido. Nenhuma ação apaga dados: a moderação trabalha com estados.
       </p>
 
-      <div className="mt-8 flex flex-wrap items-center gap-2">
+      <form
+        method="get"
+        className="mt-8 flex flex-wrap items-end gap-3 border-t border-brown-deep/20 pt-6"
+      >
+        {status ? <input type="hidden" name="status" value={status} /> : null}
+        {originHash ? (
+          <input type="hidden" name="origem" value={originHash} />
+        ) : null}
+        <div>
+          <label htmlFor="q" className="block text-xs font-medium text-brown-raised">
+            Buscar no conteúdo
+          </label>
+          <input
+            id="q"
+            name="q"
+            defaultValue={search ?? ""}
+            placeholder="palavra-chave"
+            className="mt-1 w-56 rounded-md border border-brown-deep/40 bg-beige-light/60 px-3 py-2 text-base focus:border-wine focus-visible:outline-wine sm:text-sm"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="evento"
+            className="block text-xs font-medium text-brown-raised"
+          >
+            Evento
+          </label>
+          <select
+            id="evento"
+            name="evento"
+            defaultValue={eventFilter ?? ""}
+            className="mt-1 rounded-md border border-brown-deep/40 bg-beige-light/60 px-3 py-2 text-base focus:border-wine focus-visible:outline-wine sm:text-sm"
+          >
+            <option value="">Todos</option>
+            <option value="none">Sem evento</option>
+            {events.map((event) => (
+              <option key={event.id} value={event.id}>
+                {event.title}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button type="submit" className={BUTTON}>
+          Filtrar
+        </button>
+        {search || eventFilter ? (
+          <Link
+            href={query({ status: params.status, origem: params.origem })}
+            className="text-xs font-medium tracking-[0.08em] text-brown-raised uppercase underline decoration-brown-deep/30 hover:decoration-brown-deep"
+          >
+            Limpar busca
+          </Link>
+        ) : null}
+      </form>
+
+      <div className="mt-6 flex flex-wrap items-center gap-2">
         {STATUS_FILTERS.map((filter) => {
           const active =
             filter.value === (status ?? "all") && !originHash;
           return (
             <Link
               key={filter.value}
-              href={query({ status: filter.value })}
+              href={query({ status: filter.value, origem: params.origem, q: params.q, evento: params.evento })}
               aria-current={active ? "true" : undefined}
               className={`rounded-md border px-3 py-1.5 text-xs font-medium tracking-[0.08em] uppercase transition-colors ${
                 active
@@ -157,6 +234,12 @@ export default async function AdminPostsPage({ searchParams }: Props) {
                   </td>
                   <td className="py-4">
                     <div className="flex flex-wrap gap-2">
+                      <Link
+                        href={`/admin/posts/${post.id}`}
+                        className={BUTTON}
+                      >
+                        Detalhes
+                      </Link>
                       {post.status !== "active" ? (
                         <form action={updatePostStatusAction}>
                           <input type="hidden" name="postId" value={post.id} />
@@ -164,7 +247,7 @@ export default async function AdminPostsPage({ searchParams }: Props) {
                           <input
                             type="hidden"
                             name="returnTo"
-                            value={query({ status: params.status, origem: params.origem })}
+                            value={query({ status: params.status, origem: params.origem, q: params.q, evento: params.evento })}
                           />
                           <button type="submit" className={BUTTON}>
                             Reativar
@@ -178,7 +261,7 @@ export default async function AdminPostsPage({ searchParams }: Props) {
                           <input
                             type="hidden"
                             name="returnTo"
-                            value={query({ status: params.status, origem: params.origem })}
+                            value={query({ status: params.status, origem: params.origem, q: params.q, evento: params.evento })}
                           />
                           <button type="submit" className={BUTTON}>
                             Ocultar
@@ -192,7 +275,7 @@ export default async function AdminPostsPage({ searchParams }: Props) {
                           <input
                             type="hidden"
                             name="returnTo"
-                            value={query({ status: params.status, origem: params.origem })}
+                            value={query({ status: params.status, origem: params.origem, q: params.q, evento: params.evento })}
                           />
                           <button type="submit" className={BUTTON}>
                             Remover

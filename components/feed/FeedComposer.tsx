@@ -19,6 +19,7 @@ export function FeedComposer({
   onPosted: (post: PublicPost) => void;
 }) {
   const [content, setContent] = useState("");
+  const [email, setEmail] = useState("");
   const [eventId, setEventId] = useState(initialEventId);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const fieldId = useId();
@@ -32,6 +33,7 @@ export function FeedComposer({
     const formData = new FormData(formEvent.currentTarget);
     const payload = {
       content,
+      email,
       eventId: eventId || null,
       website: String(formData.get("website") ?? ""),
     };
@@ -72,6 +74,7 @@ export function FeedComposer({
       const data = (await response.json()) as { post: PublicPost };
       onPosted(data.post);
       setContent("");
+      setEmail("");
       setEventId("");
       formRef.current?.reset();
       setStatus({ kind: "sent" });
@@ -93,8 +96,8 @@ export function FeedComposer({
         Compartilhe seu relato
       </h2>
       <p className="mt-3 max-w-xl text-sm leading-relaxed text-beige/85">
-        Sua publicação é pública e anônima. Não pedimos cadastro e não
-        mostramos nome, apelido ou qualquer identificação.
+        Sua publicação é pública, anônima e não exige cadastro. Se quiser,
+        deixe um e-mail para a moderação: ele não aparece no site.
       </p>
 
       <div className="mt-8">
@@ -121,9 +124,39 @@ export function FeedComposer({
         </p>
       </div>
 
+      <details className="mt-6">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-medium text-beige/90 hover:text-beige">
+          Deixar e-mail para a moderação
+          <span className="text-beige/70">(opcional)</span>
+        </summary>
+        <div className="mt-3">
+          <label
+            htmlFor={`${fieldId}-email`}
+            className="block text-sm font-medium"
+          >
+            E-mail
+          </label>
+          <input
+            id={`${fieldId}-email`}
+            name="email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            maxLength={120}
+            placeholder="voce@exemplo.com"
+            className="mt-2 w-full rounded-md border border-beige/40 bg-beige px-4 py-3 text-base text-brown-deep placeholder:text-brown-raised focus:border-beige focus-visible:outline-beige-light sm:max-w-md sm:text-sm"
+          />
+          <p className="mt-1 max-w-md text-xs text-beige/85">
+            Não aparece no site: fica criptografado e visível apenas para a
+            equipe de moderação.
+          </p>
+        </div>
+      </details>
+
       <div className="mt-6">
         <label htmlFor={`${fieldId}-event`} className="block text-sm font-medium">
-          Relacionado a algum evento? <span className="text-beige/85">(opcional)</span>
+          Relacionado a algum evento?{" "}
+          <span className="text-beige/70">(opcional)</span>
         </label>
         <select
           id={`${fieldId}-event`}

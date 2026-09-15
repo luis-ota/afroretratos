@@ -1,4 +1,4 @@
-import { and, desc, eq, lt, or } from "drizzle-orm";
+import { and, count, desc, eq, lt, or } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { mockDb, newId } from "@/lib/db/mock-store";
 import { events, posts } from "@/lib/db/schema";
@@ -9,6 +9,7 @@ const MAX_LIMIT = 50;
 
 export type CreatePostRecord = {
   content: string;
+  contactEncrypted: string | null;
   eventId: string | null;
   ipHash: string;
   ipEncrypted: string | null;
@@ -66,6 +67,7 @@ export async function createPost(
       .insert(posts)
       .values({
         content: input.content,
+        contactEncrypted: input.contactEncrypted,
         eventId: input.eventId,
         ipHash: input.ipHash,
         ipEncrypted: input.ipEncrypted,
@@ -97,6 +99,7 @@ export async function createPost(
   const row = {
     id: newId(),
     content: input.content,
+    contactEncrypted: input.contactEncrypted,
     eventId: input.eventId,
     ipHash: input.ipHash,
     ipEncrypted: input.ipEncrypted,
@@ -206,6 +209,18 @@ export async function listPublicPosts(options?: {
     posts: publicPosts,
     nextCursor: filtered.length > limit && last ? encodeCursor(last) : null,
   };
+}
+
+export async function countPublicPosts(): Promise<number> {
+  const db = getDb();
+  if (db) {
+    const rows = await db
+      .select({ value: count() })
+      .from(posts)
+      .where(eq(posts.status, "active"));
+    return Number(rows[0]?.value ?? 0);
+  }
+  return mockDb().posts.filter((post) => post.status === "active").length;
 }
 
 export async function listPublicPostsByEvent(

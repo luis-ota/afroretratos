@@ -86,6 +86,24 @@ bun run db:studio      # Drizzle Studio
 | `/admin` | Moderação (gate `ADMIN_SECRET`): visão geral, posts, origens, denúncias. |
 | `/robots.txt`, `/sitemap.xml` | SEO; `/admin` e `/api` fora do índice. |
 
+## Feed: relatos, e-mail opcional e moderação
+
+- Publicação sem cadastro e sempre pública como "Anônimo" (não existe
+  assinatura pública: evita alguém se passar por outra pessoa).
+- Campo opcional de **e-mail para a moderação**, guardado criptografado
+  (AES-256-GCM) e visível apenas no detalhe do post no painel.
+- Contador de relatos no topo do Feed e **RSS** em `/feed/rss.xml`.
+- Painel: busca por conteúdo, filtro por situação, por origem e por evento,
+  botão "Detalhes" em cada post.
+
+## Eventos: calendário e compartilhamento
+
+- Cada evento tem **arquivo de calendário** em
+  `/eventos/<slug>/evento.ics` (dia inteiro ou com horário, fuso de São
+  Paulo), com link "Adicionar ao calendário" na página do evento.
+- Botão "Compartilhar" usa a folha nativa do sistema e cai para cópia do
+  link quando não existe.
+
 ## Privacidade e segurança
 
 - **IP nunca é público.** A API pública devolve apenas `id`, `content`,

@@ -64,3 +64,31 @@ describe("reportSchema", () => {
     ).toBe(false);
   });
 });
+
+describe("email opcional do Feed", () => {
+  test("aceita e-mail válido e normaliza", () => {
+    const result = createPostSchema.safeParse({
+      content: "relato",
+      email: "  Pessoa@Exemplo.com ",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.email).toBe("Pessoa@Exemplo.com");
+  });
+
+  test("e-mail vazio vira null", () => {
+    const result = createPostSchema.safeParse({ content: "relato", email: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.email).toBeNull();
+  });
+
+  test("rejeita @ sem domínio e texto solto", () => {
+    expect(
+      createPostSchema.safeParse({ content: "relato", email: "@fulano" })
+        .success,
+    ).toBe(false);
+    expect(
+      createPostSchema.safeParse({ content: "relato", email: "qualquer coisa" })
+        .success,
+    ).toBe(false);
+  });
+});

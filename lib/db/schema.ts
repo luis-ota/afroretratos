@@ -53,6 +53,9 @@ export const posts = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     content: text("content").notNull(),
+    // E-mail opcional informado pelo autor para a moderacao. Criptografado
+    // com AES-256-GCM e visivel apenas no painel; o Feed e sempre anonimo.
+    contactEncrypted: text("contact_encrypted"),
     eventId: uuid("event_id").references(() => events.id, {
       onDelete: "set null",
     }),

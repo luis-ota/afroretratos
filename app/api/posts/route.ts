@@ -3,7 +3,7 @@ import { readTextWithLimit } from "@/lib/api/body";
 import { apiError, apiJson } from "@/lib/api/respond";
 import { postPolicy } from "@/lib/rate-limit/policies";
 import { rateLimit } from "@/lib/rate-limit";
-import { encryptOrigin } from "@/lib/security/crypto";
+import { encryptOrigin, encryptSecret } from "@/lib/security/crypto";
 import { hashOrigin } from "@/lib/security/hash";
 import { resolveClientOrigin } from "@/lib/security/origin";
 import {
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
       return apiError(422, "invalid", message);
     }
 
-    const { content, eventId } = parsed.data;
+    const { content, email, eventId } = parsed.data;
 
     if (countLinks(content) > MAX_LINKS_PER_POST) {
       return apiError(
@@ -126,6 +126,7 @@ export async function POST(request: NextRequest) {
     // 6. Persistencia e resposta publica (sem nenhum dado tecnico).
     const post = await createPost({
       content,
+      contactEncrypted: encryptSecret(email),
       eventId,
       ipHash,
       ipEncrypted: encryptOrigin(origin.ip),

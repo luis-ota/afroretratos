@@ -37,6 +37,7 @@ export type ModerationPost = PublicPost & {
   status: PostStatus;
   ipHash: string;
   ipEncrypted: string | null;
+  contactEncrypted: string | null;
   userAgent: string | null;
   hasIp: boolean;
 };

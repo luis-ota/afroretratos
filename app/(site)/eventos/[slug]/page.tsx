@@ -6,6 +6,7 @@ import { EventStatusTag } from "@/components/events/EventStatusTag";
 import { PostEntry } from "@/components/feed/PostEntry";
 import { ActionLink } from "@/components/ui/Action";
 import { Arrow } from "@/components/ui/Arrow";
+import { ShareEvent } from "@/components/events/ShareEvent";
 import { formatDateTimeRange } from "@/lib/format";
 import { getEventBySlug } from "@/services/events";
 import { listPublicPostsByEvent } from "@/services/posts";
@@ -131,6 +132,18 @@ export default async function EventoPage({ params }: Props) {
               >
                 Relatar este evento
               </ActionLink>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <a
+                  href={`/eventos/${event.slug}/evento.ics`}
+                  className="inline-flex min-h-11 items-center justify-center rounded-md border border-brown-deep/40 px-5 py-3 text-sm font-medium tracking-[0.08em] uppercase transition-colors hover:bg-brown-deep hover:text-beige"
+                >
+                  Adicionar ao calendário
+                </a>
+                <ShareEvent
+                  title={event.title}
+                  path={`/eventos/${event.slug}`}
+                />
+              </div>
             </div>
           </div>
         </div>

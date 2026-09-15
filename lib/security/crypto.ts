@@ -24,21 +24,21 @@ export function canEncryptOrigin(): boolean {
   return encryptionKey() !== null;
 }
 
-export function encryptOrigin(ip: string | null): string | null {
-  if (!ip) return null;
+export function encryptSecret(value: string | null): string | null {
+  if (!value) return null;
   const key = encryptionKey();
   if (!key) return null;
   const iv = randomBytes(12);
   const cipher = createCipheriv(ALGORITHM, key, iv);
   const encrypted = Buffer.concat([
-    cipher.update(ip, "utf8"),
+    cipher.update(value, "utf8"),
     cipher.final(),
   ]);
   const tag = cipher.getAuthTag();
   return Buffer.concat([iv, tag, encrypted]).toString("base64");
 }
 
-export function decryptOrigin(payload: string | null): string | null {
+export function decryptSecret(payload: string | null): string | null {
   if (!payload) return null;
   const key = encryptionKey();
   if (!key) return null;
@@ -56,3 +56,7 @@ export function decryptOrigin(payload: string | null): string | null {
     return null;
   }
 }
+
+/** Nomes historicos usados para o IP; hoje sao o mesmo cofre de segredos. */
+export const encryptOrigin = encryptSecret;
+export const decryptOrigin = decryptSecret;

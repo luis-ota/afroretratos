@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ne } from "drizzle-orm";
+import { and, count, desc, eq, ilike, isNull, ne } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { mockDb, newId } from "@/lib/db/mock-store";
 import { blockedOrigins, events, posts, reports } from "@/lib/db/schema";
@@ -15,6 +15,7 @@ type ModerationRow = {
   status: PostStatus;
   ipHash: string;
   ipEncrypted: string | null;
+  contactEncrypted: string | null;
   userAgent: string | null;
   eventSlug: string | null;
   eventTitle: string | null;
@@ -29,6 +30,7 @@ function toModerationPost(row: ModerationRow): ModerationPost {
     id: row.id,
     content: row.content,
     createdAt: asIso(row.createdAt),
+    contactEncrypted: row.contactEncrypted,
     event:
       row.eventSlug && row.eventTitle
         ? { slug: row.eventSlug, title: row.eventTitle }
@@ -75,6 +77,8 @@ export async function isOriginBlocked(ipHash: string): Promise<boolean> {
 export async function listModerationPosts(options?: {
   status?: PostStatus | null;
   originHash?: string | null;
+  query?: string | null;
+  eventId?: string | "none" | null;
   limit?: number;
 }): Promise<ModerationPost[]> {
   const limit = Math.min(Math.max(options?.limit ?? 60, 1), 200);
@@ -85,6 +89,16 @@ export async function listModerationPosts(options?: {
     if (options?.status) conditions.push(eq(posts.status, options.status));
     if (options?.originHash)
       conditions.push(eq(posts.ipHash, options.originHash));
+    if (options?.query) {
+      conditions.push(
+        ilike(posts.content, `%${options.query.replace(/[%_]/g, "")}%`),
+      );
+    }
+    if (options?.eventId === "none") {
+      conditions.push(isNull(posts.eventId));
+    } else if (options?.eventId) {
+      conditions.push(eq(posts.eventId, options.eventId));
+    }
     const rows = await db
       .select({
         id: posts.id,
@@ -93,6 +107,7 @@ export async function listModerationPosts(options?: {
         status: posts.status,
         ipHash: posts.ipHash,
         ipEncrypted: posts.ipEncrypted,
+        contactEncrypted: posts.contactEncrypted,
         userAgent: posts.userAgent,
         eventSlug: events.slug,
         eventTitle: events.title,
@@ -106,11 +121,20 @@ export async function listModerationPosts(options?: {
   }
 
   const store = mockDb();
+  const query = options?.query?.toLowerCase() ?? null;
   return store.posts
     .filter((post) => (options?.status ? post.status === options.status : true))
     .filter((post) =>
       options?.originHash ? post.ipHash === options.originHash : true,
     )
+    .filter((post) =>
+      query ? post.content.toLowerCase().includes(query) : true,
+    )
+    .filter((post) => {
+      if (options?.eventId === "none") return post.eventId === null;
+      if (options?.eventId) return post.eventId === options.eventId;
+      return true;
+    })
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .slice(0, limit)
     .map((post) => {
@@ -139,6 +163,7 @@ export async function getModerationPost(
         status: posts.status,
         ipHash: posts.ipHash,
         ipEncrypted: posts.ipEncrypted,
+        contactEncrypted: posts.contactEncrypted,
         userAgent: posts.userAgent,
         eventSlug: events.slug,
         eventTitle: events.title,
