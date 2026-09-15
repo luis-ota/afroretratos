@@ -3,7 +3,9 @@ name: afroretratos
 services:
   db:
     image: postgres:16-alpine
-    restart: unless-stopped
+    labels:
+      autoheal: "true"
+    restart: always
     environment:
       POSTGRES_USER: afro
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD}
@@ -24,7 +26,9 @@ services:
 
   redis:
     image: redis:7-alpine
-    restart: unless-stopped
+    labels:
+      autoheal: "true"
+    restart: always
     command:
       - redis-server
       - --save
@@ -46,7 +50,8 @@ services:
     image: ghcr.io/luis-ota/afroretratos:latest
     labels:
       com.centurylinklabs.watchtower.enable: "true"
-    restart: unless-stopped
+      autoheal: "true"
+    restart: always
     depends_on:
       db:
         condition: service_healthy
@@ -75,7 +80,7 @@ services:
 
   tunnel:
     image: cloudflare/cloudflared:latest
-    restart: unless-stopped
+    restart: always
     network_mode: host
     # O certificado e as credenciais ficam em ~/.cloudflared (600/400); o
     # usuario nonroot da imagem nao consegue ler o volume somente-leitura.
@@ -84,9 +89,19 @@ services:
     volumes:
       - /home/luis/.cloudflared:/etc/cloudflared:ro
 
+  autoheal:
+    image: willfarrell/autoheal:latest
+    restart: always
+    environment:
+      AUTOHEAL_CONTAINER_LABEL: autoheal
+      AUTOHEAL_INTERVAL: "30"
+      AUTOHEAL_START_PERIOD: "60"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   watchtower:
     image: containrrr/watchtower:1.7.1
-    restart: unless-stopped
+    restart: always
     environment:
       DOCKER_API_VERSION: "1.40"
     command: --label-enable --cleanup --interval 180
