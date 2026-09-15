@@ -51,3 +51,11 @@ jobs:
             ${{ steps.meta.outputs.image }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Imagem do vigia de segurança
+        uses: docker/build-push-action@v6
+        with:
+          context: docker/security
+          push: true
+          tags: ${{ steps.meta.outputs.image }}-watch:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

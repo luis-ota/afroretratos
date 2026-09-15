@@ -4,7 +4,23 @@ services:
   db:
     image: postgres:16-alpine
     labels:
-      autoheal: "true"
+      security-watch:
+    image: ghcr.io/luis-ota/afroretratos-watch:latest
+    restart: always
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    # root apenas para ler /var/log/messages (640 root:wheel); so leitura.
+    user: "0:0"
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      TZ: America/Sao_Paulo
+    volumes:
+      - /var/log:/host/log:ro
+      - /:/host/root:ro
+      - /proc:/host/proc:ro
+
+  autoheal: "true"
     restart: always
     environment:
       POSTGRES_USER: afro
@@ -27,7 +43,23 @@ services:
   redis:
     image: redis:7-alpine
     labels:
-      autoheal: "true"
+      security-watch:
+    image: ghcr.io/luis-ota/afroretratos-watch:latest
+    restart: always
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    # root apenas para ler /var/log/messages (640 root:wheel); so leitura.
+    user: "0:0"
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      TZ: America/Sao_Paulo
+    volumes:
+      - /var/log:/host/log:ro
+      - /:/host/root:ro
+      - /proc:/host/proc:ro
+
+  autoheal: "true"
     restart: always
     command:
       - redis-server
@@ -50,7 +82,23 @@ services:
     image: ghcr.io/luis-ota/afroretratos:latest
     labels:
       com.centurylinklabs.watchtower.enable: "true"
-      autoheal: "true"
+      security-watch:
+    image: ghcr.io/luis-ota/afroretratos-watch:latest
+    restart: always
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    # root apenas para ler /var/log/messages (640 root:wheel); so leitura.
+    user: "0:0"
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      TZ: America/Sao_Paulo
+    volumes:
+      - /var/log:/host/log:ro
+      - /:/host/root:ro
+      - /proc:/host/proc:ro
+
+  autoheal: "true"
     restart: always
     depends_on:
       db:
@@ -88,6 +136,22 @@ services:
     command: tunnel --config /etc/cloudflared/tunnel.yml run afroretratos
     volumes:
       - /home/luis/.cloudflared:/etc/cloudflared:ro
+
+  security-watch:
+    image: ghcr.io/luis-ota/afroretratos-watch:latest
+    restart: always
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    # root apenas para ler /var/log/messages (640 root:wheel); so leitura.
+    user: "0:0"
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      TZ: America/Sao_Paulo
+    volumes:
+      - /var/log:/host/log:ro
+      - /:/host/root:ro
+      - /proc:/host/proc:ro
 
   autoheal:
     image: willfarrell/autoheal:latest

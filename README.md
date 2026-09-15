@@ -194,6 +194,31 @@ Observações:
   `ADMIN_SECRET` + rate limit). Para restringir `/admin` ao tailnet/local,
   adicione a checagem de host em `proxy.ts`.
 
+## Monitoramento de segurança (Telegram)
+
+O serviço `security-watch` roda em container, **só lê** os logs do host e
+avisa no Telegram:
+
+- força bruta de SSH (5 falhas do mesmo IP em 10 minutos, com cooldown para
+  não virar spam);
+- disco acima de 85%, memória disponível abaixo de 80 MB e carga acima de 8;
+- resumo diário às 9h (horário de São Paulo).
+
+Para ativar:
+
+1. Crie um bot no Telegram com o `@BotFather` e copie o token.
+2. Descubra o chat id: mande `/start` para o bot e abra
+   `https://api.telegram.org/bot<SEU_TOKEN>/getUpdates`, ou use o
+   `@userinfobot`.
+3. No servidor, preencha `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID` em
+   `~/afroretratos/.env` e rode `docker compose up -d security-watch`.
+4. Teste: `docker compose exec security-watch python3 /app/watch.py --test-telegram`.
+
+Sem token configurado o vigia continua rodando e registrando em log, sem
+enviar mensagens. Ele não bloqueia nada: para bloqueio automático de brute
+force, o passo seguinte é `sshguard` (precisa de root) ou uma regra no
+roteador.
+
 ## CI/CD e atualização automática
 
 - Repositório público: https://github.com/luis-ota/afroretratos
