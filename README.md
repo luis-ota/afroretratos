@@ -219,6 +219,24 @@ enviar mensagens. Ele não bloqueia nada: para bloqueio automático de brute
 force, o passo seguinte é `sshguard` (precisa de root) ou uma regra no
 roteador.
 
+## Hardening do servidor (Acer Homelab)
+
+`deploy/harden-acer.sh` aplica, com `sudo`:
+
+- SSH somente chave pública (senha desabilitada), `PermitRootLogin
+  prohibit-password`, limites de tentativas e tempo;
+- `sshguard` com lista branca da tailnet e da LAN;
+- firewall `INPUT DROP` liberando apenas loopback, conexões estabelecidas,
+  tailnet, SSH, 80/8080 (Coolify) e ICMP limitado, com **failsafe** que
+  reverte em 3 minutos se o acesso cair;
+- sysctl de endurecimento, watchdog de hardware, atualizações semanais com
+  aviso no Telegram e Funnel do Tailscale desligado.
+
+Os containers também são endurecidos no `docker-compose.server.yml`:
+`no-new-privileges` em todos, `cap_drop: ALL` onde não há privilégio a usar,
+vigia somente leitura, métricas do cloudflared apenas no loopback e túnel
+rodando como usuário comum (não root).
+
 ## CI/CD e atualização automática
 
 - Repositório público: https://github.com/luis-ota/afroretratos
