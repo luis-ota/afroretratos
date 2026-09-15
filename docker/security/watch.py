@@ -26,6 +26,7 @@ TZ = ZoneInfo(os.environ.get("TZ", "America/Sao_Paulo"))
 
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+SERVER_NAME = os.environ.get("SERVER_NAME", "Acer Homelab").strip()
 
 LOG_PATHS = [
     Path(item.strip())
@@ -95,6 +96,13 @@ def describe_ip(ip: str) -> str:
         label = "origem nao identificada"
     _GEO_CACHE[ip] = label
     return label
+
+
+def hostname() -> str:
+    try:
+        return Path("/host/root/etc/hostname").read_text().strip() or "host"
+    except OSError:
+        return "host"
 
 
 def now() -> datetime:
@@ -218,7 +226,7 @@ class Watch:
         )
 
     def alert(self, text: str) -> None:
-        header = "Alerta de segurança do servidor\n\n"
+        header = f"Alerta de segurança · {SERVER_NAME}\n{hostname()}\n\n"
         if send_telegram(header + text):
             self.alerts_sent += 1
             log("alerta enviado ao Telegram")
@@ -274,7 +282,7 @@ class Watch:
         ):
             self.last_summary_date = today
             self.alert(
-                "Resumo diário do AfroRetratos\n\n"
+                f"Resumo diário · {SERVER_NAME}\n{hostname()}\n\n"
                 f"Falhas de SSH nas últimas 24h: {self.fails_24h}\n"
                 f"Alertas enviados: {self.alerts_sent}\n"
                 f"{self.host_status()}"
@@ -289,9 +297,10 @@ class Watch:
             + ("; telegram configurado" if TOKEN and CHAT_ID else "; SEM telegram")
         )
         send_telegram(
-            "Vigia de segurança iniciado no servidor AfroRetratos.\n"
-            "Você receberá alertas de força bruta, disco, memória e carga, "
-            "além de um resumo diário."
+            f"Vigia de segurança iniciado em {SERVER_NAME}.\n"
+            f"Host: {hostname()}\n"
+            "Você receberá alertas de força bruta, disco, memória e carga "
+            "deste servidor, além de um resumo diário."
         )
         while True:
             for tail in self.tails:

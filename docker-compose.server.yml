@@ -99,6 +99,7 @@ services:
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      SERVER_NAME: Acer Homelab
       TZ: America/Sao_Paulo
     volumes:
       - /var/log:/host/log:ro
