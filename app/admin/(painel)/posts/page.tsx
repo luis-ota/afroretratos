@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PostStatusBadge } from "@/components/admin/PostStatusBadge";
+import { InfoIcon } from "@/components/ui/InfoIcon";
 import { formatPostTimestamp } from "@/lib/format";
 import type { PostStatus } from "@/lib/types";
 import { listEvents } from "@/services/events";
@@ -236,9 +237,11 @@ export default async function AdminPostsPage({ searchParams }: Props) {
                     <div className="flex flex-wrap gap-2">
                       <Link
                         href={`/admin/posts/${post.id}`}
-                        className={BUTTON}
+                        aria-label={`Abrir detalhes do post de ${formatPostTimestamp(post.createdAt)}`}
+                        title="Detalhes"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-brown-deep/40 transition-colors hover:bg-brown-deep hover:text-beige"
                       >
-                        Detalhes
+                        <InfoIcon className="h-4 w-4" />
                       </Link>
                       {post.status !== "active" ? (
                         <form action={updatePostStatusAction}>
