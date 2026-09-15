@@ -73,6 +73,17 @@ services:
       retries: 3
       start_period: 25s
 
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    network_mode: host
+    # O certificado e as credenciais ficam em ~/.cloudflared (600/400); o
+    # usuario nonroot da imagem nao consegue ler o volume somente-leitura.
+    user: "0:0"
+    command: tunnel --config /etc/cloudflared/tunnel.yml run afroretratos
+    volumes:
+      - /home/luis/.cloudflared:/etc/cloudflared:ro
+
   watchtower:
     image: containrrr/watchtower:1.7.1
     restart: unless-stopped
