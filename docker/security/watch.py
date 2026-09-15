@@ -9,6 +9,8 @@ Le os logs do host (montados em /host/log) e avisa no Telegram sobre:
 Nao bloqueia nada nem altera o host: e somente leitura + notificacao.
 """
 
+import ipaddress
+import json
 import os
 import re
 import shutil
@@ -16,7 +18,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -53,6 +55,46 @@ ACCEPT_RE = re.compile(r"Accepted (publickey|password)")
 USER_RE = re.compile(
     r"(?:Failed password for (?:invalid user )?|Invalid user )([A-Za-z0-9._-]{1,32})"
 )
+
+
+_GEO_CACHE: dict[str, str] = {}
+
+
+def describe_ip(ip: str) -> str:
+    """Diz de onde vem o IP: tailnet, rede local ou pais/provedor."""
+    if ip in _GEO_CACHE:
+        return _GEO_CACHE[ip]
+    label = "origem desconhecida"
+    try:
+        address = ipaddress.ip_address(ip)
+        if address in ipaddress.ip_network("100.64.0.0/10"):
+            label = "dispositivo da sua tailnet"
+        elif address.is_private or address.is_loopback:
+            label = "rede local"
+        else:
+            request = urllib.request.Request(
+                f"https://ipwho.is/{ip}",
+                headers={"User-Agent": "afroretratos-watch/1.0"},
+            )
+            with urllib.request.urlopen(request, timeout=6) as response:
+                data = json.load(response)
+            if data.get("success"):
+                parts = [data.get("country"), data.get("city")]
+                connection = data.get("connection") or {}
+                org = connection.get("org") or connection.get("isp")
+                asn = connection.get("asn")
+                description = ", ".join(part for part in parts if part)
+                if org:
+                    description += f" · {org}"
+                if asn:
+                    description += f" (AS{asn})"
+                label = description or "origem publica"
+            else:
+                label = data.get("message", "origem desconhecida")
+    except Exception:  # rede indisponivel ou IP invalido
+        label = "origem nao identificada"
+    _GEO_CACHE[ip] = label
+    return label
 
 
 def now() -> datetime:
@@ -167,6 +209,7 @@ class Watch:
         self.alert(
             "Possível força bruta de SSH\n"
             f"IP: {ip}\n"
+            f"Origem: {describe_ip(ip)}\n"
             f"Falhas: {len(recent)} em {SSH_WINDOW // 60} minutos\n"
             f"{users_line}"
             f"Total hoje: {self.fails_24h}\n\n"
