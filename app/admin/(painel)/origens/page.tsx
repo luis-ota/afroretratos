@@ -77,7 +77,7 @@ export default async function AdminOriginsPage() {
                       />
                       <button
                         type="submit"
-                        className="rounded-md border border-brown-deep/40 px-3.5 py-2 text-xs font-medium tracking-[0.08em] uppercase transition-colors hover:bg-brown-deep hover:text-beige"
+                        className="inline-flex h-9 items-center rounded-md border border-brown-deep/40 px-3.5 text-xs font-medium tracking-[0.08em] uppercase transition-colors hover:bg-brown-deep hover:text-beige"
                       >
                         Desbloquear
                       </button>

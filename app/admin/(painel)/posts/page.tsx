@@ -17,7 +17,7 @@ const STATUS_FILTERS: { value: PostStatus | "all"; label: string }[] = [
 ];
 
 const BUTTON =
-  "rounded-md border border-brown-deep/40 px-3 py-1.5 text-xs font-medium tracking-[0.08em] uppercase transition-colors hover:bg-brown-deep hover:text-beige";
+  "inline-flex h-9 items-center rounded-md border border-brown-deep/40 px-3.5 text-xs font-medium tracking-[0.08em] uppercase transition-colors hover:bg-brown-deep hover:text-beige";
 
 type Props = {
   searchParams: Promise<{

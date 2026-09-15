@@ -21,9 +21,9 @@ import {
 export const dynamic = "force-dynamic";
 
 const BUTTON =
-  "rounded-md border border-brown-deep/40 px-3.5 py-2 text-xs font-medium tracking-[0.08em] uppercase transition-colors hover:bg-brown-deep hover:text-beige";
+  "inline-flex h-9 items-center rounded-md border border-brown-deep/40 px-3.5 text-xs font-medium tracking-[0.08em] uppercase transition-colors hover:bg-brown-deep hover:text-beige";
 const DANGER =
-  "rounded-md border border-wine bg-wine px-3.5 py-2 text-xs font-medium tracking-[0.08em] text-beige uppercase transition-colors hover:bg-wine-deep";
+  "inline-flex h-9 items-center rounded-md border border-wine bg-wine px-3.5 text-xs font-medium tracking-[0.08em] text-beige uppercase transition-colors hover:bg-wine-deep";
 
 type Props = { params: Promise<{ id: string }> };
 
