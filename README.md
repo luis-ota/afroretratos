@@ -168,32 +168,6 @@ Fonts. A origem dos logotipos está em
    `X-Forwarded-For`) e `NEXT_PUBLIC_SITE_URL`.
 4. Rode `bun run db:migrate` apontando para o Neon e, se quiser, `db:seed`.
 
-## Acesso remoto (Tailscale Funnel)
-
-Para mostrar o site fora da rede local sem exigir instalação de nada:
-
-```bash
-bun run build
-bun run start --port 3100        # servidor de produção
-tailscale funnel --bg 3100       # https://<maquina>.<tailnet>.ts.net -> 127.0.0.1:3100
-tailscale funnel status          # conferir
-tailscale funnel --https=443 off # desligar quando não precisar mais
-```
-
-Observações:
-
-- O Funnel precisa ser habilitado uma vez no painel do Tailscale (HTTPS +
-  Funnel). O config do Funnel persiste no `tailscaled`, mas o
-  `bun run start` precisa ser religado após reiniciar a máquina.
-- `NEXT_PUBLIC_SITE_URL` deve apontar para a URL pública para canonical/OG
-  saírem certos.
-- O Tailscale encaminha `X-Forwarded-For` com o IP real do visitante; com
-  `TRUSTED_PROXY_HOPS=1` o rate limit e o bloqueio por origem funcionam por
-  visitante (validado: o `ip_hash` gravado corresponde ao IP público).
-- Rotas administrativas ficam expostas junto com o site (login com
-  `ADMIN_SECRET` + rate limit). Para restringir `/admin` ao tailnet/local,
-  adicione a checagem de host em `proxy.ts`.
-
 ## Monitoramento de segurança (Telegram)
 
 O serviço `security-watch` roda em container, **só lê** os logs do host e
@@ -218,24 +192,6 @@ Sem token configurado o vigia continua rodando e registrando em log, sem
 enviar mensagens. Ele não bloqueia nada: para bloqueio automático de brute
 force, o passo seguinte é `sshguard` (precisa de root) ou uma regra no
 roteador.
-
-## Hardening do servidor (Acer Homelab)
-
-`deploy/harden-acer.sh` aplica, com `sudo`:
-
-- SSH somente chave pública (senha desabilitada), `PermitRootLogin
-  prohibit-password`, limites de tentativas e tempo;
-- `sshguard` com lista branca da tailnet e da LAN;
-- firewall `INPUT DROP` liberando apenas loopback, conexões estabelecidas,
-  tailnet, SSH, 80/8080 (Coolify) e ICMP limitado, com **failsafe** que
-  reverte em 3 minutos se o acesso cair;
-- sysctl de endurecimento, watchdog de hardware, atualizações semanais com
-  aviso no Telegram e Funnel do Tailscale desligado.
-
-Os containers também são endurecidos no `docker-compose.server.yml`:
-`no-new-privileges` em todos, `cap_drop: ALL` onde não há privilégio a usar,
-vigia somente leitura, métricas do cloudflared apenas no loopback e túnel
-rodando como usuário comum (não root).
 
 ## CI/CD e atualização automática
 
