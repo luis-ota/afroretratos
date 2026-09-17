@@ -2,7 +2,9 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
 
-const url = process.env.DATABASE_URL;
+// Migrations rodam melhor na conexao direta (sem pgbouncer). Neon, por
+// exemplo, expoe uma URL "direct" separada da URL "pooler".
+const url = process.env.DIRECT_DATABASE_URL || process.env.DATABASE_URL;
 if (!url) {
   console.error("[migrate] DATABASE_URL ausente.");
   process.exit(1);

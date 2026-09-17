@@ -1,0 +1,65 @@
+name: afroretratos
+
+# VPS Oracle rootless (Cloudflare proxied + nginx na frente).
+# Postgres fica no Neon e Redis no Upstash, entao aqui roda so a aplicacao e o
+# vigia. Nao ha watchtower/autoheal: o Docker desta VPS e rootless, containers
+# nao acessam /var/run/docker.sock. A atualizacao roda no host (update.sh via
+# cron), que e o mesmo padrao dos outros projetos da VPS.
+
+services:
+  app:
+    image: ghcr.io/luis-ota/afroretratos:latest
+    restart: always
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?defina DATABASE_URL}
+      DIRECT_DATABASE_URL: ${DIRECT_DATABASE_URL:-}
+      REDIS_URL: ${REDIS_URL:?defina REDIS_URL}
+      ORIGIN_HASH_SECRET: ${ORIGIN_HASH_SECRET:?defina ORIGIN_HASH_SECRET}
+      ORIGIN_ENCRYPTION_KEY: ${ORIGIN_ENCRYPTION_KEY:?defina ORIGIN_ENCRYPTION_KEY}
+      ADMIN_SECRET: ${ADMIN_SECRET:?defina ADMIN_SECRET}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://afroretratos.wired.rs}
+      # A origem so aceita trafego do Cloudflare (allowlist no nginx), entao o
+      # cabecalho cf-connecting-ip e confiavel.
+      TRUSTED_PROXY_HOPS: "0"
+      TRUST_CLOUDFLARE_HEADER: "true"
+      NODE_OPTIONS: --max-old-space-size=320
+    ports:
+      - "127.0.0.1:3100:3000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -O /dev/null http://127.0.0.1:3000/api/health || exit 1
+      interval: 30s
+      timeout: 6s
+      retries: 3
+      start_period: 25s
+
+  security-watch:
+    image: ghcr.io/luis-ota/afroretratos-watch:latest
+    restart: always
+    # root apenas para ler /var/log/auth.log (640 root:adm); so leitura.
+    user: "0:0"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      SERVER_NAME: ${SERVER_NAME:-Servidor wired.rs}
+      WATCH_LOGS: /host/log/auth.log
+      TZ: America/Sao_Paulo
+    volumes:
+      - /var/log:/host/log:ro
+      - /:/host/root:ro
+      - /proc:/host/proc:ro
