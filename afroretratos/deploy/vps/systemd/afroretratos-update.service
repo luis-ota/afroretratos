@@ -1,0 +1,11 @@
+[Unit]
+Description=Atualiza os containers do AfroRetratos
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Environment=HOME=/home/ubuntu
+Environment=XDG_RUNTIME_DIR=/run/user/1001
+WorkingDirectory=/home/ubuntu/afroretratos
+ExecStart=/home/ubuntu/afroretratos/update.sh

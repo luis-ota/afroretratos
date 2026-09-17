@@ -6,9 +6,15 @@
 #   sempre ligado  -> 0.25 * 24h * 30d = 180 CU-h (estoura a cota)
 #   janela de 12h  -> 0.25 * 12h * 30d =  90 CU-h (sobra folga pro trafego real)
 #
-# Cron sugerido (a cada 4 minutos entre 11h e 22h):
-#   */4 11-22 * * * /home/ubuntu/afroretratos/keepalive.sh >> /home/ubuntu/afroretratos/keepalive.log 2>&1
+# A janela fica aqui (e nao no agendador) para o timer poder rodar a cada
+# 4 minutos o dia inteiro sem gastar cota fora de hora.
 set -eu
+
+# A VPS roda em UTC; a janela aqui e no horario de Sao Paulo.
+HOUR=$(TZ=America/Sao_Paulo date +%H)
+if [ "$HOUR" -lt 11 ] || [ "$HOUR" -gt 22 ]; then
+  exit 0
+fi
 
 # /api/posts faz uma consulta real no Postgres (acorda o compute) e nao passa
 # pelo rate limit do Redis. /api/health nao serve aqui: ele nao toca o banco.

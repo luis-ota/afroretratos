@@ -11,30 +11,69 @@ vigia, proxy e automacao.
 - `nginx` (do host) proxying `afroretratos.wired.rs` para `127.0.0.1:3100`
 - Certificado: `/etc/ssl/cert.pem` (Cloudflare Origin CA, cobre `*.wired.rs`)
 
+## Proteger as cotas (Neon 100 CU-h, Upstash 10k comandos/dia)
+
+Qualquer request que chega na origem pode acordar o Neon e gastar comando no
+Redis, entao a defesa e em camadas:
+
+- **`/api/health` nao toca no banco.** O healthcheck roda a cada 30s; apontado
+  para `/api/posts` (como estava) acordaria o Neon 24/7 e sozinho consumiria
+  ~180 CU-h/mes.
+- **Micro-cache no nginx** (`nginx-limits.conf`): 30s para paginas e 15s para
+  `/api/`, com `proxy_cache_lock` e `use_stale updating`. Crawler e F5 batem no
+  cache e nao chegam no Neon.
+- **`limit_req`** por IP real (o IP ja vem resolvido do `cf-connecting-ip`):
+  10 r/s para paginas, 2 r/s para `/api/`.
+- **Ruido descartado**: user agents de SEO/scraping levam `444` e caminhos de
+  scanner (`wp-admin`, `.env`, `.git`...) tambem.
+- **Redis so em escrita**: rate limit de POST posts/reports e login admin. As
+  leituras nao gastam comando no Upstash.
+- **Keepalive com janela** (`keepalive.sh`): acorda o compute a cada 4 min so
+  entre 11h e 22h de Sao Paulo, o que custa ~90 CU-h/mes. Sem janela seriam
+  180 CU-h e estouraria a cota.
+
+Na borda (Cloudflare), o que vale configurar no painel:
+
+- **Cache Rule** "Cache Everything" para `afroretratos.wired.rs` (respeitando
+  `s-maxage`), para o HTML nem chegar na origem.
+- **Bot Fight Mode** ligado (Security > Bots).
+- **Rate limiting rule** (1 gratis) em `/api/*`: ex. 20 requisicoes/minuto por
+  IP, acao "block" por 1 minuto.
+- **WAF Managed Rules** no nivel padrao.
+
 ## Docker rootless
 
 O Docker desta VPS e rootless, entao **containers nao acessam
-`/var/run/docker.sock`** e watchtower/autoheal nao funcionam. A atualizacao e a
-recuperacao de container unhealthy rodam no host:
+`/var/run/docker.sock`** e watchtower/autoheal nao funcionam (davam loop de
+"permission denied"). A atualizacao e o restart de container unhealthy rodam no
+host via systemd timers:
+
+- `afroretratos-update.timer`: a cada 5 min, `update.sh` faz pull + up e
+  reinicia container unhealthy.
+- `afroretratos-keepalive.timer`: a cada 4 min, `keepalive.sh` reaquece o Neon
+  dentro da janela.
 
 ```sh
-*/5 * * * * /home/ubuntu/afroretratos/update.sh >> /home/ubuntu/afroretratos/update.log 2>&1
+sudo cp systemd/*.service systemd/*.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now afroretratos-update.timer afroretratos-keepalive.timer
 ```
 
-## Neon e Upstash
+## Hardening do host
 
-- Neon na regiao `aws-sa-east-1`. A aplicacao usa a URL com `-pooler`; as
-  migrations usam a direta (`DIRECT_DATABASE_URL`).
-- Upstash na regiao `sa-east-1` (URL `rediss://`).
-- O healthcheck da aplicacao bate em `/api/health`, que **nao toca no banco**.
-  Foi de proposito: o probe roda a cada 30s e, batendo em `/api/posts`,
-  acordaria o Neon 24/7 (180 CU-h/mes, acima dos 100 CU-h do plano free).
-- Para nao ter cold start sem estourar a cota, o `keepalive.sh` acorda o
-  compute a cada 4 minutos na janela de 11h a 22h (~90 CU-h/mes):
+`harden.sh` (roda com sudo, com failsafe que reverte o firewall em 180s):
 
-```sh
-*/4 11-22 * * * /home/ubuntu/afroretratos/keepalive.sh >> /home/ubuntu/afroretratos/keepalive.log 2>&1
-```
+- firewall: `INPUT DROP` liberando so 22/80/443, `lo`, established e ICMP
+  (persistido com `netfilter-persistent`);
+- `rpcbind` desabilitado (nao havia NFS montado, mas a 111 estava exposta);
+- SSH: `MaxAuthTries 3`, `LoginGraceTime 20` (senha ja estava desabilitada);
+- `fail2ban` com jail de `sshd` (backend systemd).
+
+Com Cloudflare na frente, banir IP no fail2ban para 80/443 nao resolve nada: o
+atacante nunca fala direto com a origem e a allowlist de IPs do Cloudflare ja
+descarta o resto. Por isso o bloqueio web fica no nginx (`limit_req` + `444`) e
+no Cloudflare (WAF/rate limit), e o fail2ban fica com o SSH, que e o unico alvo
+direto.
 
 ## Passo a passo
 
@@ -46,16 +85,20 @@ recuperacao de container unhealthy rodam no host:
 3. Restaurar o dump no Neon usando a URL direta:
    `psql "$DIRECT_DATABASE_URL" -f afroretratos-dump.sql`
 4. `docker compose up -d` (o entrypoint aplica migrations pendentes).
-5. Instalar os crons de `update.sh` e `keepalive.sh`.
+5. Instalar os timers (secao acima).
 6. nginx:
+   - `sudo install -m 644 nginx-limits.conf /etc/nginx/conf.d/afroretratos-limits.conf`
    - `sudo install -m 644 nginx-afroretratos.conf /etc/nginx/sites-available/afroretratos.wired.rs`
    - `sudo ln -sf /etc/nginx/sites-available/afroretratos.wired.rs /etc/nginx/sites-enabled/`
+   - `sudo mkdir -p /var/cache/nginx && sudo chown -R www-data:www-data /var/cache/nginx`
    - `sudo install -m 755 refresh-cloudflare-ips.sh /usr/local/bin/refresh-cloudflare-ips.sh`
    - `sudo /usr/local/bin/refresh-cloudflare-ips.sh`
    - `sudo nginx -t && sudo systemctl reload nginx`
 
    Sugestao de cron semanal para manter a allowlist do Cloudflare em dia:
    `0 4 * * 1 /usr/local/bin/refresh-cloudflare-ips.sh >> /var/log/cloudflare-ips.log 2>&1`
-7. Cloudflare: apontar `afroretratos.wired.rs` para o IP da VPS (registro A,
+7. Hardening: `sudo sh harden.sh`
+8. Cloudflare: apontar `afroretratos.wired.rs` para o IP da VPS (registro A,
    nuvem laranja). O tunel do homelab fica como rollback por alguns dias.
-8. Verificar: `curl -sI https://afroretratos.wired.rs/feed`.
+9. Verificar: `curl -sI https://afroretratos.wired.rs/feed` e
+   `journalctl -u afroretratos-update -n 20`.

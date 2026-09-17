@@ -5,8 +5,7 @@
 # /var/run/docker.sock e o watchtower nao funciona aqui. Este script roda no
 # host, como o usuario dono do Docker, fazendo o mesmo papel.
 #
-# Cron sugerido (a cada 5 minutos):
-#   */5 * * * * /home/ubuntu/afroretratos/update.sh >> /home/ubuntu/afroretratos/update.log 2>&1
+# Agendado por systemd timer (afroretratos-update.timer, a cada 5 min).
 set -eu
 
 cd "$(dirname "$0")"

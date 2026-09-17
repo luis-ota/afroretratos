@@ -1,0 +1,10 @@
+[Unit]
+Description=Roda o keepalive do Neon a cada 4 minutos
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=4min
+AccuracySec=15s
+
+[Install]
+WantedBy=timers.target
