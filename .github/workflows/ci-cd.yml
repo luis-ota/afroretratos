@@ -13,6 +13,9 @@ jobs:
   checks:
     name: Tipos, lint e testes
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: afroretratos
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -44,7 +47,7 @@ jobs:
         run: echo "image=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
       - uses: docker/build-push-action@v6
         with:
-          context: .
+          context: afroretratos
           push: true
           tags: |
             ${{ steps.meta.outputs.image }}:latest
@@ -54,7 +57,7 @@ jobs:
       - name: Imagem do vigia de segurança
         uses: docker/build-push-action@v6
         with:
-          context: docker/security
+          context: afroretratos/docker/security
           push: true
           tags: ${{ steps.meta.outputs.image }}-watch:latest
           cache-from: type=gha
