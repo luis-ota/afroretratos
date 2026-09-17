@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FeedNotice } from "@/components/feed/FeedNotice";
 import { FeedStream } from "@/components/feed/FeedStream";
 import { listEventOptions } from "@/services/events";
 import { countPublicPosts, listPublicPosts } from "@/services/posts";
@@ -48,6 +49,8 @@ export default async function FeedPage({ searchParams }: Props) {
           </div>
         </div>
       </header>
+
+      <FeedNotice />
 
       <section aria-label="Publicar e ler relatos" className="bg-beige">
         <div className="mx-auto max-w-[96rem] px-5 py-12 sm:px-8 sm:py-16">
