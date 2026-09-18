@@ -112,3 +112,19 @@ direto.
    nuvem laranja). O tunel do homelab fica como rollback por alguns dias.
 9. Verificar: `curl -sI https://afroretratos.wired.rs/feed` e
    `journalctl -u afroretratos-update -n 20`.
+
+## Rollback (voltar pro homelab)
+
+O stack do homelab fica no ar como rollback. Para voltar:
+
+1. No Cloudflare, trocar o registro `afroretratos.wired.rs`
+   (id `d9b9cf7fd59511506897661c99a8a0fb`) de A `163.176.208.60` para CNAME
+   `92d31552-88be-48b1-b847-124299321739.cfargotunnel.com`, com proxy ligado.
+2. **Sincronizar os dados**: o que foi gravado no Neon depois da virada nao
+   existe no Postgres do homelab. Dump do Neon
+   (`pg_dump "$DIRECT_DATABASE_URL" --no-owner --no-privileges`) e restore no
+   banco do homelab antes de reativar as escritas.
+3. Desligar `afroretratos-update.timer` e `afroretratos-keepalive.timer` na VPS
+   (`sudo systemctl disable --now ...`) para o container nao continuar subindo
+   contra o Neon.
+
