@@ -32,14 +32,24 @@ Redis, entao a defesa e em camadas:
   entre 11h e 22h de Sao Paulo, o que custa ~90 CU-h/mes. Sem janela seriam
   180 CU-h e estouraria a cota.
 
-Na borda (Cloudflare), o que vale configurar no painel:
+Na borda (Cloudflare), configurado via API:
 
-- **Cache Rule** "Cache Everything" para `afroretratos.wired.rs` (respeitando
-  `s-maxage`), para o HTML nem chegar na origem.
-- **Bot Fight Mode** ligado (Security > Bots).
-- **Rate limiting rule** (1 gratis) em `/api/*`: ex. 20 requisicoes/minuto por
-  IP, acao "block" por 1 minuto.
-- **WAF Managed Rules** no nivel padrao.
+- **Cache Rule** "Cache do AfroRetratos (fora /admin)": cache no edge com
+  `edge_ttl` de 30s (override do origin) e `browser_ttl` respeitando o origin.
+- **Rate limiting rule** em `/api/*`: 15 requisicoes / 10s por `ip.src` +
+  `cf.colo.id`, bloqueio de 10s. O plano free so aceita `period = 10s` e
+  `mitigation_timeout = 10s`.
+- **Always Use HTTPS** ligado; SSL em `strict` (certificado Origin CA).
+- **Bot Fight Mode** ainda no painel (o token nao expoe esse setting):
+  Security > Bots.
+
+Detalhe que quase derrubou o site na virada: a allowlist da origem precisa
+olhar `$realip_remote_addr` (o IP que conectou, do Cloudflare) e nao
+`$remote_addr`, que o `real_ip_header` ja reescreveu para o visitante. Sem isso,
+o `allow`/`deny` compara o IP do visitante com a faixa do Cloudflare e devolve
+403 para todo mundo. Por isso a allowlist e um `geo` em
+`/etc/nginx/cloudflare-geo.conf`, incluido pelo `nginx-limits.conf`.
+
 
 ## Docker rootless
 
