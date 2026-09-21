@@ -195,10 +195,10 @@ roteador.
 
 ## CI/CD e atualização automática
 
-- Repositório público: https://github.com/luis-ota/afroretratos
+- Repositório público: https://github.com/wired-layer-co/afroretratos
 - Cada push na `main` dispara `.github/workflows/ci-cd.yml`: typecheck, lint,
   testes e build da imagem Docker publicada em
-  `ghcr.io/luis-ota/afroretratos:latest` (também tagueada com o SHA do commit).
+  `ghcr.io/wired-layer-co/afroretratos:latest` (também tagueada com o SHA do commit).
 - No servidor, o serviço `watchtower` do `docker-compose.server.yml` verifica a
   cada 3 minutos se a imagem mudou (label
   `com.centurylinklabs.watchtower.enable`) e recria o container da app sozinho.
@@ -209,7 +209,7 @@ roteador.
   ```
 
 - Rollback: fixe uma tag por SHA no compose
-  (`ghcr.io/luis-ota/afroretratos:<sha>`) e rode `docker compose up -d app`.
+  (`ghcr.io/wired-layer-co/afroretratos:<sha>`) e rode `docker compose up -d app`.
 
 ## Decisões e pendências
 

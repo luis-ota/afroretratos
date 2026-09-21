@@ -47,7 +47,7 @@ services:
       retries: 10
 
   app:
-    image: ghcr.io/luis-ota/afroretratos:latest
+    image: ghcr.io/wired-layer-co/afroretratos:latest
     restart: always
     init: true
     security_opt:
@@ -101,7 +101,7 @@ services:
       - /home/luis/.cloudflared:/etc/cloudflared:ro
 
   security-watch:
-    image: ghcr.io/luis-ota/afroretratos-watch:latest
+    image: ghcr.io/wired-layer-co/afroretratos-watch:latest
     restart: always
     labels:
       com.centurylinklabs.watchtower.enable: "true"

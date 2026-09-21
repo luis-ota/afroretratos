@@ -8,7 +8,7 @@ name: afroretratos
 
 services:
   app:
-    image: ghcr.io/luis-ota/afroretratos:latest
+    image: ghcr.io/wired-layer-co/afroretratos:latest
     restart: always
     init: true
     security_opt:
@@ -42,7 +42,7 @@ services:
       start_period: 25s
 
   security-watch:
-    image: ghcr.io/luis-ota/afroretratos-watch:latest
+    image: ghcr.io/wired-layer-co/afroretratos-watch:latest
     restart: always
     # root apenas para ler /var/log/auth.log (640 root:adm); so leitura.
     user: "0:0"
