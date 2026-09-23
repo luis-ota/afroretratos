@@ -41,6 +41,12 @@ export function Hero() {
               Audiovisual da PUCPR, no Projeto IV: Production Design.
             </p>
 
+            <p className="mt-8 max-w-[52ch] text-[1.0625rem] leading-[1.75] text-brown-raised">
+              Construímos o AfroRetratos para fortalecer a autoestima e o
+              sentimento de pertencimento de pessoas negras por meio da
+              representatividade e da valorização da identidade.
+            </p>
+
             <ul
               aria-label="Equipe"
               className="mt-8 grid gap-x-10 sm:grid-cols-2"
@@ -54,12 +60,6 @@ export function Hero() {
                 </li>
               ))}
             </ul>
-
-            <p className="mt-8 max-w-[52ch] text-[1.0625rem] leading-[1.75] text-brown-raised">
-              Construímos o AfroRetratos para fortalecer a autoestima e o
-              sentimento de pertencimento de pessoas negras por meio da
-              representatividade e da valorização da identidade.
-            </p>
 
             <div className="mt-9 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
               <ActionLink
