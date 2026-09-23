@@ -6,7 +6,7 @@ const TEAM = [
   "Hiago Araújo",
   "Isabella Monteiro",
   "Larissa Gonçalves",
-  "Maria Eduarda Netzel",
+  "Mah Netzel",
   "Maryana Mendes",
 ];
 

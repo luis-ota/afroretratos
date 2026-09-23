@@ -57,8 +57,8 @@ export function Footer() {
           <p className="max-w-[60ch] leading-relaxed sm:text-right">
             Projeto IV: Production Design · PUCPR
             <br />
-            Equipe: Hiago Araújo, Isabella Monteiro, Larissa Gonçalves, Maria
-            Eduarda Netzel e Maryana Mendes.
+            Equipe: Hiago Araújo, Isabella Monteiro, Larissa Gonçalves, Mah
+            Netzel e Maryana Mendes.
           </p>
         </div>
       </div>
