@@ -89,8 +89,8 @@ export function EventCover({
               style={{ width: `${widths[index % widths.length]}%`, backgroundColor: bg }}
               className={
                 row.text
-                  ? "flex items-center px-3 py-1.5 sm:min-h-16 sm:px-4 sm:py-2"
-                  : "h-5 sm:h-10"
+                  ? "flex items-center px-3 py-1.5 sm:min-h-20 sm:px-4 sm:py-2"
+                  : "h-5 sm:h-12"
               }
             >
               {row.text ? (
