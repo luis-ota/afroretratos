@@ -94,7 +94,8 @@ export function EventForm({ event }: { event?: PublicEvent }) {
         />
         <p className={HINT}>
           Opcional. Sem capa, o evento usa a composição gerada com as cores da
-          marca. Hosts externos precisam de liberação em next.config.ts.
+          marca. Melhor formato: paisagem 1600 × 800 px (2:1), JPG ou WebP de
+          até 500 KB. Hosts externos precisam de liberação em next.config.ts.
         </p>
       </div>
 

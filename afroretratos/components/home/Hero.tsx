@@ -29,37 +29,38 @@ export function Hero() {
 
         <div className="mt-12 grid gap-10 lg:mt-8 lg:grid-cols-12 lg:gap-0">
           <div
-            className="rounded-lg bg-beige p-7 text-brown-deep sm:p-10 lg:col-span-7 lg:col-start-6 lg:row-start-1 lg:-mr-8 lg:p-12"
+            className="rounded-lg bg-beige p-7 text-brown-deep sm:p-10 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:-mr-8 lg:p-12"
             data-hero-enter="2"
           >
             <p className="font-display text-[clamp(1.9rem,3.2vw,2.75rem)] leading-[1.32] tracking-[-0.01em]">
               Quem somos nós
             </p>
 
-            <p className="mt-6 max-w-[52ch] text-[1.0625rem] leading-[1.75] text-brown-raised">
-              Um coletivo de estudantes de Publicidade e Propaganda e Cinema e
-              Audiovisual da PUCPR, no Projeto IV: Production Design.
-            </p>
+            <div className="mt-6 grid gap-8 sm:grid-cols-2">
+              <div className="grid content-start gap-6">
+                <p className="max-w-[52ch] text-[1.0625rem] leading-[1.75] text-brown-raised">
+                  Um coletivo de estudantes de Publicidade e Propaganda e Cinema e
+                  Audiovisual da PUCPR, no Projeto IV: Production Design.
+                </p>
 
-            <p className="mt-8 max-w-[52ch] text-[1.0625rem] leading-[1.75] text-brown-raised">
-              Construímos o AfroRetratos para fortalecer a autoestima e o
-              sentimento de pertencimento de pessoas negras por meio da
-              representatividade e da valorização da identidade.
-            </p>
+                <p className="max-w-[52ch] text-[1.0625rem] leading-[1.75] text-brown-raised">
+                  Construímos o AfroRetratos para fortalecer a autoestima e o
+                  sentimento de pertencimento de pessoas negras por meio da
+                  representatividade e da valorização da identidade.
+                </p>
+              </div>
 
-            <ul
-              aria-label="Equipe"
-              className="mt-8 grid gap-x-10 sm:grid-cols-2"
-            >
-              {TEAM.map((name) => (
-                <li
-                  key={name}
-                  className="border-t border-brown-deep/20 py-3 text-sm font-medium"
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
+              <ul aria-label="Equipe" className="grid content-start">
+                {TEAM.map((name) => (
+                  <li
+                    key={name}
+                    className="border-t border-brown-deep/20 py-3 text-sm font-medium"
+                  >
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             <div className="mt-9 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
               <ActionLink

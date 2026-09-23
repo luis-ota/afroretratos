@@ -53,7 +53,7 @@ export default async function EventoPage({ params }: Props) {
   return (
     <article>
       <header className="bg-brown text-beige">
-        <div className="mx-auto max-w-[96rem] px-5 pt-10 sm:px-8 sm:pt-12">
+        <div className="mx-auto max-w-[96rem] px-5 pt-6 sm:px-8 sm:pt-8">
           <Link
             href="/eventos"
             className="group inline-flex min-h-11 items-center gap-3 text-xs font-medium tracking-[0.16em] uppercase text-beige/80 hover:text-beige"
@@ -65,8 +65,8 @@ export default async function EventoPage({ params }: Props) {
             Todos os eventos
           </Link>
         </div>
-        <div className="mx-auto grid max-w-[96rem] gap-8 px-5 pt-10 pb-12 sm:px-8 sm:pt-12 sm:pb-14 lg:grid-cols-12 lg:items-end">
-          <h1 className="font-display text-[clamp(2.6rem,7vw,5.4rem)] leading-[0.94] tracking-[-0.015em] lg:col-span-8">
+        <div className="mx-auto grid max-w-[96rem] gap-8 px-5 pt-6 pb-8 sm:px-8 sm:pt-8 sm:pb-10 lg:grid-cols-12 lg:items-end">
+          <h1 className="font-display text-[clamp(2.2rem,6vw,4.6rem)] leading-[0.94] tracking-[-0.015em] lg:col-span-8">
             {event.title}
           </h1>
           <div className="lg:col-span-4 lg:col-start-9 lg:justify-self-end">
@@ -77,8 +77,10 @@ export default async function EventoPage({ params }: Props) {
           slug={event.slug}
           title={event.title}
           coverImage={event.coverImage}
+          dateLine={formatDateTimeRange(event.startsAt, event.endsAt)}
+          placeLine={`${event.venue} — ${event.location}`}
           priority
-          className="aspect-[4/3] w-full sm:aspect-[16/9]"
+          className="w-full"
         />
       </header>
 

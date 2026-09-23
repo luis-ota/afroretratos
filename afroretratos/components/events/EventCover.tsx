@@ -11,27 +11,32 @@ function hash(input: string): number {
 // Larguras limitadas a ~62%: a faixa de texto fica na metade esquerda e o
 // icone respira no campo vinho a direita, sem se perder sobre o bege.
 const LAYOUTS = [
-  [56, 38, 62, 30, 48],
-  [44, 60, 34, 52, 40],
-  [62, 34, 50, 42, 58],
-  [38, 54, 46, 62, 36],
+  [80, 54, 89, 43, 68],
+  [63, 86, 48, 75, 57],
+  [89, 48, 72, 61, 83],
+  [54, 77, 66, 89, 52],
 ] as const;
 
 /**
- * Capa provisoria: faixas horizontais nas cores oficiais, em ritmo
- * irregular, com o icone da marca. Nenhuma fotografia e simulada. Quando o
- * evento tiver coverImage real, ela assume o lugar automaticamente.
+ * Capa provisoria: blocos horizontais nas cores oficiais com titulo, data e
+ * local do evento, em ritmo irregular, com o icone da marca. Nenhuma
+ * fotografia e simulada. Quando o evento tiver coverImage real, ela assume o
+ * lugar automaticamente.
  */
 export function EventCover({
   slug,
   title,
   coverImage,
+  dateLine,
+  placeLine,
   className = "",
   priority = false,
 }: {
   slug: string;
   title: string;
   coverImage?: string | null;
+  dateLine?: string | null;
+  placeLine?: string | null;
   className?: string;
   priority?: boolean;
 }) {
@@ -60,26 +65,49 @@ export function EventCover({
   const palette = palettes[seed % palettes.length];
   const offset = 7 + (seed % 12);
 
+  const BEIGE = "#CCB49A";
+  const WINE = "#510000";
+  const texts = [title, dateLine, placeLine].filter(Boolean) as string[];
+  const rows: { text: string | null; first: boolean }[] = [
+    { text: null, first: false },
+    ...texts.map((text, index) => ({ text, first: index === 0 })),
+    { text: null, first: false },
+  ];
+
   return (
-    <div
-      role="img"
-      aria-label={`Capa provisória do evento ${title}`}
-      className={`relative overflow-hidden bg-wine-deep ${className}`}
-    >
+    <div className={`relative overflow-hidden bg-wine-deep ${className}`}>
       <div
-        className="absolute inset-0 flex flex-col justify-center gap-[0.5rem]"
+        className="flex flex-col justify-center gap-1.5 py-8 pr-[30%] sm:gap-2 sm:py-12 sm:pr-[16%]"
         style={{ paddingLeft: `${offset}%` }}
       >
-        {widths.map((width, index) => (
-          <span
-            key={index}
-            style={{
-              width: `${width}%`,
-              backgroundColor: palette[index % palette.length],
-              height: index === 2 || index === 3 ? "15%" : "9%",
-            }}
-          />
-        ))}
+        {rows.map((row, index) => {
+          const bg = palette[index % palette.length];
+          const fg = bg === BEIGE ? WINE : BEIGE;
+          return (
+            <span
+              key={index}
+              style={{ width: `${widths[index % widths.length]}%`, backgroundColor: bg }}
+              className={
+                row.text
+                  ? "flex items-center px-3 py-1.5 sm:min-h-16 sm:px-4 sm:py-2"
+                  : "h-5 sm:h-10"
+              }
+            >
+              {row.text ? (
+                <span
+                  style={{ color: fg }}
+                  className={
+                    row.first
+                      ? "block text-sm leading-snug font-semibold sm:text-xl"
+                      : "block text-[10px] font-medium tracking-[0.08em] uppercase sm:text-xs"
+                  }
+                >
+                  {row.text}
+                </span>
+              ) : null}
+            </span>
+          );
+        })}
       </div>
       <Image
         src="/brand/afroretratos-icone-bege.png"
